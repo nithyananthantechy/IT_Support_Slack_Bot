@@ -168,7 +168,7 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
         }
 
         // 1. Detect Intent (skip if passed from proactive check)
-        const intent = cachedIntent || await aiService.detectIntent(text);
+        const intent = cachedIntent || await aiService.detectIntent(text, { isDM });
         logProcess(`Intent detected: ${JSON.stringify(intent)}`);
 
         // 2. Handle specific actions
@@ -199,6 +199,8 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
 
         if (intent.action === 'answer' && intent.direct_answer) {
             await smartSay({ text: intent.direct_answer });
+            const analyticsService = require('./services/analyticsService');
+            analyticsService.logDeflection(userId, 'direct_answer', 'direct_answer').catch(err => console.error(err));
             return;
         }
 
@@ -284,12 +286,12 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
                         setTimeout(() => reject(new Error('AI Generation Timeout')), 15000)
                     );
                     dynamicSteps = await Promise.race([
-                        aiService.generateDynamicSteps(text),
+                        aiService.generateDynamicSteps(text, false, { isDM }),
                         timeoutPromise
                     ]);
                 } catch (error) {
                     console.error("⚠️ Dynamic steps failed or timed out:", error.message);
-                    dynamicSteps = await aiService.generateDynamicSteps(text, true); // Force fallback
+                    dynamicSteps = await aiService.generateDynamicSteps(text, true, { isDM }); // Force fallback
                 }
 
                 if (dynamicSteps && dynamicSteps.length > 0) {
@@ -344,7 +346,7 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
             if (intent.direct_answer) {
                 response = intent.direct_answer;
             } else {
-                response = await aiService.generateResponse(text, conversationManager.getConversationState(userId).history);
+                response = await aiService.generateResponse(text, conversationManager.getConversationState(userId).history, { isDM });
             }
             await smartSay({
                 text: response,
@@ -433,6 +435,10 @@ ${data.description}
         // Store ticket-user mapping for webhook notifications
         const ticketUserMap = require('./services/ticketUserMap');
         ticketUserMap.storeMapping(ticket.id, userId, channelId, data.type || 'general');
+
+        // Log ticket to analytics
+        const analyticsService = require('./services/analyticsService');
+        analyticsService.logTicket(ticket.id, userId, data.type || 'general').catch(err => console.error(err));
 
         // Use say (public) for ticket confirmation so team knows
         await say({
@@ -546,7 +552,7 @@ app.message(async ({ message, say, client, logger }) => {
 
     // Proactive Support AI check (only if no KB match)
     try {
-        const intent = await aiService.detectIntent(cleanedText);
+        const intent = await aiService.detectIntent(cleanedText, { isDM });
         logProcess(`Proactive intent check for "${cleanedText}": ${JSON.stringify(intent)}`);
 
         // If it's an IT issue, process it
@@ -593,6 +599,13 @@ app.action('step_solved', async ({ body, ack, say, client }) => {
             text: msg
         });
     }
+
+    // Log deflection to analytics
+    const state = conversationManager.getConversationState(userId);
+    const articleId = state.currentArticle ? state.currentArticle.id : 'unknown';
+    const analyticsService = require('./services/analyticsService');
+    analyticsService.logDeflection(userId, articleId, 'kb').catch(err => console.error(err));
+
     conversationManager.clearConversationState(userId);
 });
 
@@ -680,6 +693,10 @@ app.view('submit_issue', async ({ ack, body, view, client }) => {
             blocks: messageViews.ticketCreated(ticket.id)
         });
 
+        // Log ticket to analytics
+        const analyticsService = require('./services/analyticsService');
+        analyticsService.logTicket(ticket.id, userId, topic.toLowerCase() || 'general').catch(err => console.error(err));
+
     } catch (error) {
         console.error(error);
         await client.chat.postMessage({
@@ -698,6 +715,11 @@ const webhookApp = express();
 const webhookPort = config.webhookPort || 3000;
 
 webhookApp.use(express.json());
+webhookApp.use(express.static('public'));
+
+// Import and mount Admin Routes
+const adminRoutes = require('./services/adminRoutes');
+webhookApp.use('/api/admin', adminRoutes);
 
 /**
  * Webhook endpoint to receive Freshservice ticket updates

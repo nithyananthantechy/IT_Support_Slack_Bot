@@ -1,6 +1,7 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const OpenAI = require("openai");
 const config = require("../config/ai");
+const privacyService = require("./privacyService");
 
 // Initialize Gemini
 let geminiModel;
@@ -69,9 +70,12 @@ const fallbackDetectIntent = (text) => {
     return { action: "answer", direct_answer: "I'm here to help with IT issues. What's on your mind?", needs_troubleshooting: false };
 };
 
-const detectIntent = async (userMessage) => {
+const detectIntent = async (userMessage, options = {}) => {
+    // PII Redaction
+    const redactedMessage = privacyService.redact(userMessage);
+
     // 1. FAST GREETING check
-    const lowerText = userMessage.trim().toLowerCase();
+    const lowerText = redactedMessage.trim().toLowerCase();
     const greetings = ['hi', 'hello', 'hey', 'yo', 'morning', 'afternoon', 'evening', 'hola'];
     const words = lowerText.split(/\s+/);
 
@@ -99,7 +103,7 @@ const detectIntent = async (userMessage) => {
 
     // 2. Full IT Assistant Prompt
     const prompt = `
-You are a concierge IT helpdesk assistant. Analyze: "${userMessage}"
+You are a concierge IT helpdesk assistant. Analyze: "${redactedMessage}"
 Provide JSON ONLY. DO NOT return any other text or explanation. Use this EXACT schema:
 {
   "issue_type": "network/printer/password/software/hardware/email/vpn/biometric/freshservice/domain_lock/password_reset/general_question",
@@ -117,7 +121,15 @@ Rules:
 - If the user is asking "who are you", explain you are an IT Helpdesk Bot.
 `;
 
-    for (const provider of config.priority) {
+    // Privacy Routing: Force Ollama for DM/IM if configured
+    const privacyCfg = privacyService.getPrivacyConfig();
+    let priorityProviders = config.priority;
+    if (options.isDM && privacyCfg.forceLocalOllamaForDMs) {
+        console.log("🔒 Privacy Mode: Routing private DM conversation to local Ollama.");
+        priorityProviders = ['ollama'];
+    }
+
+    for (const provider of priorityProviders) {
         try {
             let jsonString;
             let timeoutId;
@@ -132,7 +144,7 @@ Rules:
                         ollama.chat.completions.create({
                             messages: [
                                 { role: "system", content: "You are an IT helpdesk bot. JSON ONLY." },
-                                { role: "user", content: `[INST] Analyze: "${userMessage}". JSON ONLY. [/INST]` }
+                                { role: "user", content: `[INST] Analyze: "${redactedMessage}". JSON ONLY. [/INST]` }
                             ],
                             model: config.ollama.model
                         }),
@@ -175,10 +187,12 @@ Rules:
             console.error(`${provider} intent failed:`, e.message);
         }
     }
-    return fallbackDetectIntent(userMessage);
+    return fallbackDetectIntent(redactedMessage);
 };
 
-const generateDynamicSteps = async (issueDescription, forceFallback = false) => {
+const generateDynamicSteps = async (issueDescription, forceFallback = false, options = {}) => {
+    const redactedIssue = privacyService.redact(issueDescription);
+
     const getFallbackSteps = (desc) => {
         const lower = desc.toLowerCase();
         if (lower.includes('mouse')) {
@@ -199,12 +213,18 @@ const generateDynamicSteps = async (issueDescription, forceFallback = false) => 
         ];
     };
 
-    if (forceFallback) return getFallbackSteps(issueDescription);
+    if (forceFallback) return getFallbackSteps(redactedIssue);
 
-    for (const provider of config.priority) {
+    const privacyCfg = privacyService.getPrivacyConfig();
+    let priorityProviders = config.priority;
+    if (options.isDM && privacyCfg.forceLocalOllamaForDMs) {
+        priorityProviders = ['ollama'];
+    }
+
+    for (const provider of priorityProviders) {
         try {
             let jsonString;
-            const prompt = `Generate 5 structured IT troubleshooting steps for: "${issueDescription}". Return ONLY a JSON array of 5 objects with "title", "actions" (array), and "expected_result".`;
+            const prompt = `Generate 5 structured IT troubleshooting steps for: "${redactedIssue}". Return ONLY a JSON array of 5 objects with "title", "actions" (array), and "expected_result".`;
 
             if (provider === 'ollama' && ollama) {
                 const completion = await ollama.chat.completions.create({
@@ -228,15 +248,27 @@ const generateDynamicSteps = async (issueDescription, forceFallback = false) => 
             console.error(`${provider} steps failed:`, e.message);
         }
     }
-    return getFallbackSteps(issueDescription);
+    return getFallbackSteps(redactedIssue);
 };
 
-const generateResponse = async (userMessage, history) => {
-    for (const provider of config.priority) {
+const generateResponse = async (userMessage, history, options = {}) => {
+    const redactedMessage = privacyService.redact(userMessage);
+    const redactedHistory = history.map(h => ({
+        role: h.role,
+        content: privacyService.redact(h.content)
+    }));
+
+    const privacyCfg = privacyService.getPrivacyConfig();
+    let priorityProviders = config.priority;
+    if (options.isDM && privacyCfg.forceLocalOllamaForDMs) {
+        priorityProviders = ['ollama'];
+    }
+
+    for (const provider of priorityProviders) {
         try {
             if (provider === 'ollama' && ollama) {
                 const completion = await ollama.chat.completions.create({
-                    messages: [{ role: "system", content: "You are a friendly IT assistant." }, ...history, { role: "user", content: userMessage }],
+                    messages: [{ role: "system", content: "You are a friendly IT assistant." }, ...redactedHistory, { role: "user", content: redactedMessage }],
                     model: config.ollama.model
                 });
                 return completion.choices[0].message.content;

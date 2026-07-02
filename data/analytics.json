@@ -1,0 +1,90 @@
+{
+  "tickets": [
+    {
+      "ticketId": 101,
+      "userId": "U12345",
+      "ticketType": "domain_lock",
+      "timestamp": "2026-06-27T06:55:10.417Z"
+    },
+    {
+      "ticketId": 102,
+      "userId": "U67890",
+      "ticketType": "hardware",
+      "timestamp": "2026-06-28T06:55:10.417Z"
+    },
+    {
+      "ticketId": 103,
+      "userId": "U12345",
+      "ticketType": "password_reset",
+      "timestamp": "2026-06-29T06:55:10.417Z"
+    },
+    {
+      "ticketId": 104,
+      "userId": "U34567",
+      "ticketType": "network",
+      "timestamp": "2026-06-30T06:55:10.417Z"
+    },
+    {
+      "ticketId": 105,
+      "userId": "U90123",
+      "ticketType": "software",
+      "timestamp": "2026-07-01T06:55:10.417Z"
+    },
+    {
+      "ticketId": "test_999",
+      "userId": "U12345",
+      "ticketType": "network",
+      "timestamp": "2026-07-02T06:55:10.517Z"
+    }
+  ],
+  "deflections": [
+    {
+      "userId": "U12345",
+      "articleIdOrTopic": "google_meet_troubleshoot.json",
+      "source": "kb",
+      "timestamp": "2026-06-26T06:55:10.417Z"
+    },
+    {
+      "userId": "U67890",
+      "articleIdOrTopic": "direct_answer",
+      "source": "direct_answer",
+      "timestamp": "2026-06-27T06:55:10.417Z"
+    },
+    {
+      "userId": "U34567",
+      "articleIdOrTopic": "adobe_pdf_issues.json",
+      "source": "kb",
+      "timestamp": "2026-06-28T06:55:10.417Z"
+    },
+    {
+      "userId": "U90123",
+      "articleIdOrTopic": "direct_answer",
+      "source": "direct_answer",
+      "timestamp": "2026-06-29T06:55:10.417Z"
+    },
+    {
+      "userId": "U12345",
+      "articleIdOrTopic": "folder_permission_fix.json",
+      "source": "kb",
+      "timestamp": "2026-06-30T06:55:10.417Z"
+    },
+    {
+      "userId": "U11111",
+      "articleIdOrTopic": "linux_service_restart.json",
+      "source": "kb",
+      "timestamp": "2026-07-01T06:55:10.417Z"
+    },
+    {
+      "userId": "U22222",
+      "articleIdOrTopic": "direct_answer",
+      "source": "direct_answer",
+      "timestamp": "2026-07-01T18:55:10.417Z"
+    },
+    {
+      "userId": "U12345",
+      "articleIdOrTopic": "google_meet_troubleshoot.json",
+      "source": "kb",
+      "timestamp": "2026-07-02T06:55:10.518Z"
+    }
+  ]
+}

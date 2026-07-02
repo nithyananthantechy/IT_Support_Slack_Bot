@@ -120,8 +120,33 @@ const getAllArticles = () => {
     return articlesCache;
 }
 
+/**
+ * Save/Create a JSON article
+ */
+const saveArticle = async (id, articleData) => {
+    const filename = id.endsWith('.json') ? id : `${id}.json`;
+    const filePath = path.join(ARTICLES_DIR, filename);
+    await fs.writeJson(filePath, articleData, { spaces: 2 });
+    await loadArticles();
+};
+
+/**
+ * Delete an article
+ */
+const deleteArticle = async (id) => {
+    const filePath = path.join(ARTICLES_DIR, id);
+    if (await fs.pathExists(filePath)) {
+        await fs.remove(filePath);
+        await loadArticles();
+        return true;
+    }
+    return false;
+};
+
 module.exports = {
     loadArticles,
     findArticle,
-    getAllArticles
+    getAllArticles,
+    saveArticle,
+    deleteArticle
 };

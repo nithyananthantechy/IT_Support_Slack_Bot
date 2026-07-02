@@ -1,0 +1,9 @@
+{
+  "redactPII": true,
+  "forceLocalOllamaForDMs": true,
+  "redactedFields": [
+    "email",
+    "phone",
+    "ip"
+  ]
+}
