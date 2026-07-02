@@ -66,7 +66,7 @@ const saveMappings = async () => {
  * @param {string} channelId - Slack channel ID (for DM)
  * @param {string} ticketType - Type of ticket (domain_lock, password_reset, general, etc.)
  */
-const storeMapping = (ticketId, userId, channelId, ticketType = 'general') => {
+const storeMapping = (ticketId, userId, channelId, ticketType = 'general', threadTs = null) => {
     // Determine if this is a sensitive ticket
     const sensitiveTypes = ['domain_lock', 'password_reset'];
     const isSensitive = sensitiveTypes.includes(ticketType);
@@ -76,6 +76,7 @@ const storeMapping = (ticketId, userId, channelId, ticketType = 'general') => {
         channelId,
         ticketType,
         isSensitive,
+        threadTs,
         createdAt: new Date().toISOString()
     };
     ticketCache.set(String(ticketId), mapping);
@@ -94,6 +95,25 @@ const storeMapping = (ticketId, userId, channelId, ticketType = 'general') => {
 const getMapping = (ticketId) => {
     return ticketCache.get(String(ticketId)) || null;
 };
+/**
+ * Get ticket mapping from thread timestamp
+ * @param {string} threadTs - Slack thread timestamp
+ * @returns {object|null} - { ticketId, userId, channelId, ticketType, isSensitive, threadTs } or null
+ */
+const getMappingByThreadTs = (threadTs) => {
+    if (!threadTs) return null;
+    const allKeys = ticketCache.keys();
+    for (const key of allKeys) {
+        const mapping = ticketCache.get(key);
+        if (mapping && mapping.threadTs === threadTs) {
+            return {
+                ticketId: key,
+                ...mapping
+            };
+        }
+    }
+    return null;
+};
 
 /**
  * Remove mapping (optional cleanup)
@@ -110,5 +130,6 @@ loadMappings();
 module.exports = {
     storeMapping,
     getMapping,
+    getMappingByThreadTs,
     removeMapping
 };

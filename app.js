@@ -406,17 +406,47 @@ async function finalizeTicket(data, userId, channelId, smartSay, say, client) {
 
         // Format subject based on ticket type
         let ticketSubject;
+        let l2Group = 'SysAdmin';
+        let severity = 'Medium';
+        let structuredSummary = '';
+
+        // Get conversation history to pass to classifier
+        const conversationManager = require('./services/conversationManager');
+        const convoState = conversationManager.getConversationState(userId);
+        const historyText = (convoState.history || [])
+            .map(h => `${h.role === 'user' ? 'Employee' : 'Bot'}: ${h.content}`)
+            .join('\n');
+
         if (data.isQuickTicket) {
             // Quick tickets: "Domain Lock - EMP123", "Password Reset - EMP123", or "Biometric Access - EMP123"
             const ticketTypeName = data.type === 'domain_lock' ? 'Domain Lock' :
                 data.type === 'password_reset' ? 'Password Reset' : 'Biometric Access';
             ticketSubject = `${ticketTypeName} - ${data.empId}`;
+            
+            // Preset routing for quick tickets
+            if (data.type === 'domain_lock' || data.type === 'password_reset') {
+                l2Group = 'SecOps';
+            } else if (data.type === 'biometric') {
+                l2Group = 'Hardware';
+            }
         } else {
-            // Regular tickets: Keep existing format
+            // Regular tickets: Keep existing format + perform L2 AI Classification
             ticketSubject = data.subject;
+            
+            try {
+                const aiService = require('./services/aiService');
+                const classification = await aiService.classifyL2Ticket(historyText || data.description);
+                if (classification) {
+                    l2Group = classification.l2_group || l2Group;
+                    severity = classification.priority || severity;
+                    structuredSummary = classification.structured_summary || '';
+                }
+            } catch (err) {
+                console.error("Failed to run L2 classification, falling back to default routing:", err);
+            }
         }
 
-        const ticketDescription = `
+        let ticketDescription = `
 User Data:
 - Employee ID: ${data.empId}
 - System Hostname: ${data.hostname || 'N/A (Quick Ticket or Biometric Issue)'}
@@ -425,6 +455,11 @@ Original Issue:
 ${data.description}
         `.trim();
 
+        if (structuredSummary) {
+            ticketDescription += `\n\nL1 Diagnostic Summary:\n${structuredSummary}`;
+        }
+        ticketDescription += `\n\nAssigned L2 Queue: ${l2Group}\nPriority: ${severity}`;
+
         const ticket = await freshservice.createTicket({
             subject: ticketSubject,
             description: ticketDescription,
@@ -432,20 +467,20 @@ ${data.description}
             name: requesterName
         });
 
-        // Store ticket-user mapping for webhook notifications
-        const ticketUserMap = require('./services/ticketUserMap');
-        ticketUserMap.storeMapping(ticket.id, userId, channelId, data.type || 'general');
-
-        // Log ticket to analytics
-        const analyticsService = require('./services/analyticsService');
-        analyticsService.logTicket(ticket.id, userId, data.type || 'general').catch(err => console.error(err));
-
         // Use say (public) for ticket confirmation so team knows
-        await say({
+        const result = await say({
             channel: channelId,
             text: `Support ticket #${ticket.id} created successfully.`,
             blocks: messageViews.ticketCreated(ticket.id)
         });
+
+        // Store ticket-user mapping with thread timestamp for webhook notifications
+        const ticketUserMap = require('./services/ticketUserMap');
+        ticketUserMap.storeMapping(ticket.id, userId, channelId, data.type || 'general', result ? result.ts : null);
+
+        // Log ticket to analytics
+        const analyticsService = require('./services/analyticsService');
+        analyticsService.logTicket(ticket.id, userId, data.type || 'general').catch(err => console.error(err));
 
         // Clear state
         conversationManager.clearConversationState(userId);
@@ -505,6 +540,45 @@ app.message(async ({ message, say, client, logger }) => {
 
     // Ignore bot messages
     if (message.bot_id) return;
+
+    // Check if this is a reply in a thread associated with a ticket
+    if (message.thread_ts) {
+        const ticketUserMap = require('./services/ticketUserMap');
+        const mapping = ticketUserMap.getMappingByThreadTs(message.thread_ts);
+        if (mapping) {
+            console.log(`💬 Detected reply in ticket thread. Thread: ${message.thread_ts}, Ticket ID: ${mapping.ticketId}`);
+            try {
+                // Forward the message to Freshservice as a comment/note
+                const freshservice = require('./services/freshservice');
+                
+                let userDisplayName = message.user;
+                try {
+                    const userInfo = await client.users.info({ user: message.user });
+                    if (userInfo && userInfo.user) {
+                        userDisplayName = userInfo.user.profile.real_name || userInfo.user.name;
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch Slack user info:", e);
+                }
+
+                // Format comment body
+                const commentBody = `[Slack Reply from ${userDisplayName}]: ${message.text || ""}`;
+                
+                await freshservice.addTicketNote(mapping.ticketId, commentBody, false);
+                console.log(`✅ Forwarded Slack reply to Freshservice Ticket #${mapping.ticketId}`);
+                
+                // React with a checkmark to show the user it was synced
+                await client.reactions.add({
+                    channel: message.channel,
+                    timestamp: message.ts,
+                    name: 'white_check_mark'
+                });
+            } catch (err) {
+                console.error("Failed to forward Slack thread reply to Freshservice:", err);
+            }
+            return; // Intercept and stop further L1 processing
+        }
+    }
 
     // Ignore messages that are handled via app_mention to prevent double-replies
     // Note: Bolt usually triggers both if the bot is mentioned in a channel
@@ -858,9 +932,13 @@ webhookApp.post('/freshservice/webhook', async (req, res) => {
                 updateMessage = `*Ticket status updated to: ${status}*\n\n*Ticket #${ticketId}:* ${subject}`;
             }
 
-            // Send notification to user
+            // Send notification to user (threaded if mapping exists)
+            const targetChannel = mapping.channelId || mapping.userId;
+            const targetThread = mapping.threadTs || undefined;
+
             await app.client.chat.postMessage({
-                channel: mapping.userId,
+                channel: targetChannel,
+                thread_ts: targetThread,
                 text: `${emoji} Ticket Update`,
                 blocks: [
                     {
@@ -882,7 +960,7 @@ webhookApp.post('/freshservice/webhook', async (req, res) => {
                 ]
             });
 
-            console.log(`✅ Notified user ${mapping.userId} about ticket ${ticketId} update`);
+            console.log(`✅ Notified user ${mapping.userId} about ticket ${ticketId} update in thread ${targetThread}`);
             res.status(200).json({ message: 'Notification sent' });
         }
 

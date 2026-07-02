@@ -109,8 +109,45 @@ const getLatestTicketReply = async (ticketId) => {
     }
 };
 
+/**
+ * addTicketNote
+ * Adds a note/comment to a Freshservice ticket
+ * @param {string|number} ticketId 
+ * @param {string} noteText 
+ * @param {boolean} isPrivate 
+ * @returns {Promise<object>}
+ */
+const addTicketNote = async (ticketId, noteText, isPrivate = false) => {
+    if (!FRESHSERVICE_DOMAIN || !FRESHSERVICE_API_KEY) {
+        console.warn("Freshservice credentials not found. Mocking note addition.");
+        return {
+            id: Math.floor(Math.random() * 10000),
+            body: noteText,
+            private: isPrivate,
+            created_at: new Date().toISOString()
+        };
+    }
+
+    try {
+        const response = await axios.post(`https://${FRESHSERVICE_DOMAIN}/api/v2/tickets/${ticketId}/notes`, {
+            body: noteText,
+            private: isPrivate
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Basic ${Buffer.from(FRESHSERVICE_API_KEY + ':X').toString('base64')}`
+            }
+        });
+        return response.data.note;
+    } catch (error) {
+        console.error("Error adding ticket note:", error.response ? error.response.data : error.message);
+        throw new Error("Failed to add note.");
+    }
+};
+
 module.exports = {
     createTicket,
     getTicketConversations,
-    getLatestTicketReply
+    getLatestTicketReply,
+    addTicketNote
 };

@@ -278,4 +278,113 @@ const generateResponse = async (userMessage, history, options = {}) => {
     return "I'm having trouble with my AI right now. How can I help you?";
 };
 
-module.exports = { detectIntent, generateDynamicSteps, generateResponse };
+const classifyL2Ticket = async (chatHistory) => {
+    const redactedHistory = privacyService.redact(chatHistory);
+
+    const prompt = `
+You are an IT Support L2 routing agent. Analyze the following conversation history between an employee and the L1 helpdesk bot.
+Determine the correct L2 team queue to assign the ticket to, the severity of the issue, and create a structured technical summary.
+
+Available L2 Teams:
+- NetOps: Handles network issues, WiFi, VPN connection errors, DNS slowness, firewall blockages.
+- SysAdmin: Handles operating system problems, file permissions, server crashes, domain login/account issues.
+- SecOps: Handles phishing alerts, compromised accounts, security software alerts, MFA reset issues.
+- DevOps: Handles cloud infrastructure, pipeline deployments, database errors, model/dataset download issues.
+- Hardware: Handles physical devices, keyboards, mice, printers, docking stations.
+
+Provide your response in JSON ONLY. DO NOT return any other text, markdown blocks, or explanation.
+Use this EXACT JSON schema:
+{
+  "l2_group": "NetOps/SysAdmin/SecOps/DevOps/Hardware",
+  "priority": "Low/Medium/High/Critical",
+  "structured_summary": "Provide a 2-3 sentence technical summary of the issue, steps tried, and error messages."
+}
+
+Conversation History:
+"""
+${redactedHistory}
+"""
+`;
+
+    // Try providers in priority order
+    for (const provider of config.priority) {
+        try {
+            let jsonString;
+            let timeoutId;
+            const timeoutDuration = provider === 'ollama' ? 30000 : 15000;
+            const timeoutPromise = new Promise((_, reject) => {
+                timeoutId = setTimeout(() => reject(new Error(`${provider} Timeout`)), timeoutDuration);
+            });
+
+            try {
+                if (provider === 'ollama' && ollama) {
+                    const completion = await Promise.race([
+                        ollama.chat.completions.create({
+                            messages: [
+                                { role: "system", content: "You are an L2 routing agent. JSON ONLY." },
+                                { role: "user", content: `[INST] ${prompt} [/INST]` }
+                            ],
+                            model: config.ollama.model
+                        }),
+                        timeoutPromise
+                    ]);
+                    jsonString = completion.choices[0].message.content;
+                } else if (provider === 'openai' && openai) {
+                    const completion = await Promise.race([
+                        openai.chat.completions.create({
+                            messages: [
+                                { role: "system", content: "You are an L2 routing agent. JSON ONLY." },
+                                { role: "user", content: prompt }
+                            ],
+                            model: config.openai.model
+                        }),
+                        timeoutPromise
+                    ]);
+                    jsonString = completion.choices[0].message.content;
+                } else if (provider === 'gemini' && geminiModel) {
+                    const result = await Promise.race([
+                        geminiModel.generateContent(prompt),
+                        timeoutPromise
+                    ]);
+                    jsonString = result.response.text();
+                } else {
+                    clearTimeout(timeoutId);
+                    continue;
+                }
+            } finally {
+                clearTimeout(timeoutId);
+            }
+
+            const match = jsonString.match(/\{[\s\S]*\}/);
+            if (!match) throw new Error("No JSON found in response");
+
+            const parsed = JSON.parse(match[0]);
+            console.log(`PARSED L2 CLASSIFICATION (${provider.toUpperCase()}):`, parsed);
+            return parsed;
+        } catch (e) {
+            console.error(`${provider} L2 classification failed:`, e.message);
+        }
+    }
+
+    // Default Fallback
+    console.warn("⚠️ All AI L2 classifiers failed. Using fallback routing.");
+    let group = "SysAdmin";
+    const lowerHistory = redactedHistory.toLowerCase();
+    if (lowerHistory.includes('vpn') || lowerHistory.includes('net') || lowerHistory.includes('wifi') || lowerHistory.includes('dns')) {
+        group = "NetOps";
+    } else if (lowerHistory.includes('printer') || lowerHistory.includes('mouse') || lowerHistory.includes('keyboard')) {
+        group = "Hardware";
+    } else if (lowerHistory.includes('phish') || lowerHistory.includes('malware') || lowerHistory.includes('hack') || lowerHistory.includes('mfa')) {
+        group = "SecOps";
+    } else if (lowerHistory.includes('docker') || lowerHistory.includes('database') || lowerHistory.includes('aws') || lowerHistory.includes('model')) {
+        group = "DevOps";
+    }
+
+    return {
+        l2_group: group,
+        priority: "Medium",
+        structured_summary: `Escalated ticket based on conversation history: "${redactedHistory.substring(0, 150)}..."`
+    };
+};
+
+module.exports = { detectIntent, generateDynamicSteps, generateResponse, classifyL2Ticket };
