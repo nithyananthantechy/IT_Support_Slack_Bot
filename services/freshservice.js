@@ -117,7 +117,7 @@ const getLatestTicketReply = async (ticketId) => {
  * @param {boolean} isPrivate 
  * @returns {Promise<object>}
  */
-const addTicketNote = async (ticketId, noteText, isPrivate = false) => {
+const addTicketNote = async (ticketId, noteText, isPrivate = false, attachments = []) => {
     if (!FRESHSERVICE_DOMAIN || !FRESHSERVICE_API_KEY) {
         console.warn("Freshservice credentials not found. Mocking note addition.");
         return {
@@ -129,15 +129,34 @@ const addTicketNote = async (ticketId, noteText, isPrivate = false) => {
     }
 
     try {
-        const response = await axios.post(`https://${FRESHSERVICE_DOMAIN}/api/v2/tickets/${ticketId}/notes`, {
-            body: noteText,
-            private: isPrivate
-        }, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Basic ${Buffer.from(FRESHSERVICE_API_KEY + ':X').toString('base64')}`
+        let response;
+        if (attachments && attachments.length > 0) {
+            const formData = new FormData();
+            formData.append('body', noteText);
+            formData.append('private', String(isPrivate));
+
+            for (const att of attachments) {
+                const blob = new Blob([att.data], { type: att.mimeType });
+                const file = new File([blob], att.filename, { type: att.mimeType });
+                formData.append('attachments[]', file);
             }
-        });
+
+            response = await axios.post(`https://${FRESHSERVICE_DOMAIN}/api/v2/tickets/${ticketId}/notes`, formData, {
+                headers: {
+                    'Authorization': `Basic ${Buffer.from(FRESHSERVICE_API_KEY + ':X').toString('base64')}`
+                }
+            });
+        } else {
+            response = await axios.post(`https://${FRESHSERVICE_DOMAIN}/api/v2/tickets/${ticketId}/notes`, {
+                body: noteText,
+                private: isPrivate
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Basic ${Buffer.from(FRESHSERVICE_API_KEY + ':X').toString('base64')}`
+                }
+            });
+        }
         return response.data.note;
     } catch (error) {
         console.error("Error adding ticket note:", error.response ? error.response.data : error.message);

@@ -61,6 +61,16 @@ const troubleshootingStep = (stepText, currentStep, totalSteps, articleId) => {
                     style: "danger",
                     action_id: "step_failed",
                     value: JSON.stringify({ articleId, step: currentStep })
+                },
+                {
+                    type: "button",
+                    text: {
+                        type: "plain_text",
+                        text: "🙋‍♂️ Speak to Agent",
+                        emoji: true
+                    },
+                    action_id: "request_agent_handoff",
+                    value: JSON.stringify({ articleId })
                 }
             ]
         }

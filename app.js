@@ -618,7 +618,29 @@ app.message(async ({ message, say, client, logger }) => {
                 // Format comment body
                 const commentBody = `[Slack Reply from ${userDisplayName}]: ${message.text || ""}`;
                 
-                await freshservice.addTicketNote(mapping.ticketId, commentBody, false);
+                // Fetch attachments if any
+                const attachments = [];
+                if (message.files && message.files.length > 0) {
+                    const axios = require('axios');
+                    for (const file of message.files) {
+                        try {
+                            console.log(`Downloading file ${file.name} from Slack...`);
+                            const fileResponse = await axios.get(file.url_private, {
+                                headers: { Authorization: `Bearer ${config.slackBotToken}` },
+                                responseType: 'arraybuffer'
+                            });
+                            attachments.push({
+                                data: fileResponse.data,
+                                filename: file.name,
+                                mimeType: file.mimetype
+                            });
+                        } catch (fileErr) {
+                            console.error(`Failed to download Slack file ${file.name}:`, fileErr.message);
+                        }
+                    }
+                }
+
+                await freshservice.addTicketNote(mapping.ticketId, commentBody, false, attachments);
                 console.log(`✅ Forwarded Slack reply to Freshservice Ticket #${mapping.ticketId}`);
                 
                 // React with a checkmark to show the user it was synced
@@ -826,6 +848,45 @@ app.action('step_solved', async ({ body, ack, say, client }) => {
     analyticsService.logDeflection(userId, articleId, 'kb').catch(err => console.error(err));
 
     conversationManager.clearConversationState(userId);
+});
+
+// Button: Request Agent Handoff
+app.action('request_agent_handoff', async ({ body, ack, say, client }) => {
+    await ack();
+    const userId = body.user.id;
+    const channelId = body.channel.id;
+    const isDM = channelId.startsWith('D');
+    const state = conversationManager.getConversationState(userId);
+    const article = state.currentArticle;
+
+    const smartSay = async (args) => {
+        if (typeof args === 'string') args = { text: args };
+        if (isDM) {
+            return await say(args);
+        } else {
+            return await client.chat.postEphemeral({
+                channel: channelId,
+                user: userId,
+                ...args
+            });
+        }
+    };
+
+    const title = article ? article.title : "Escalated Issue";
+    const issueType = article ? (article.issue_type || 'General') : 'General';
+
+    conversationManager.updateConversationState(userId, {
+        state: 'AWAITING_MODAL_DETAILS',
+        pendingTicketData: {
+            subject: `Requested Escalation: ${title}`,
+            description: `User requested immediate human handoff during L1 troubleshooting for: ${title}.`,
+            type: issueType
+        }
+    });
+
+    await smartSay({
+        blocks: messageViews.requestDetailsButton(`I will escalate this immediately to the L2 support team. Please click the button below to provide ticket details.`)
+    });
 });
 
 // Button: Step Failed
