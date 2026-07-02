@@ -1,0 +1,30 @@
+{
+    "issue_type": "network",
+    "title": "Connection Timeout Errors",
+    "description": "Troubleshoot website or server connection timeout errors.",
+    "keywords": [
+        "timeout error",
+        "timeout errors",
+        "connection timed out",
+        "err_connection_timed_out",
+        "site taking too long to respond",
+        "server timeout"
+    ],
+    "steps": [
+        {
+            "instruction": "Verify your internet connection. Try loading other websites to see if the issue is with a specific site or your entire connection."
+        },
+        {
+            "instruction": "If the site requires a company network, ensure your VPN is connected and secured."
+        },
+        {
+            "instruction": "Clear your web browser cache and cookies, or try opening the site in an Incognito/Private window."
+        },
+        {
+            "instruction": "Temporarily flush your DNS: Open Command Prompt as Administrator, type `ipconfig /flushdns` and press Enter."
+        },
+        {
+            "instruction": "If the site is an external domain (e.g., a specific client portal), it may be restricted by the company firewall or experiencing its own server downtime."
+        }
+    ]
+}

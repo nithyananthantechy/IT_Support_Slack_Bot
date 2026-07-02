@@ -11,7 +11,9 @@
         "headset",
         "volume",
         "mute",
-        "no sound"
+        "no sound",
+        "microphone showing error",
+        "mic error"
     ],
     "steps": [
         {

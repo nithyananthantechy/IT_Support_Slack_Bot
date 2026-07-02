@@ -38,10 +38,15 @@ const loadMappings = async () => {
     }
 };
 
+// Start loading immediately and store the promise
+const loadPromise = loadMappings();
+
 /**
  * Save mappings to file for persistence
  */
 const saveMappings = async () => {
+    // Wait for the initial load to complete before trying to save
+    await loadPromise;
     if (!isLoaded) {
         console.warn("⚠️ Attempted to save mappings before load complete. Skipping to avoid data loss.");
         return;
@@ -123,9 +128,6 @@ const removeMapping = (ticketId) => {
     ticketCache.del(String(ticketId));
     saveMappings().catch(err => console.error("Failed to save mappings:", err));
 };
-
-// Load mappings on module initialization
-loadMappings();
 
 module.exports = {
     storeMapping,

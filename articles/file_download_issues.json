@@ -1,0 +1,30 @@
+{
+    "issue_type": "software",
+    "title": "File Download Failed",
+    "description": "Troubleshooting interrupted or blocked file downloads from the internet.",
+    "keywords": [
+        "file download failed",
+        "cannot download file",
+        "download interrupted",
+        "download blocked",
+        "browser blocking download",
+        "failed to download"
+    ],
+    "steps": [
+        {
+            "instruction": "Check your internet connection stability. Downloads often fail if Wi-Fi disconnects momentarily."
+        },
+        {
+            "instruction": "Ensure you have enough free storage space on your hard drive to accommodate the downloaded file."
+        },
+        {
+            "instruction": "Check your browser's 'Downloads' page (Ctrl+J). Sometimes browsers block downloads identifying them as malicious. If you trust the source, click 'Keep dangerous file'."
+        },
+        {
+            "instruction": "Clear your browser cache, restart your browser, and try downloading the file again."
+        },
+        {
+            "instruction": "Certain file types (.exe, .bat, .zip) might be blocked by the corporate firewall. If this is a work-required tool, please raise an IT ticket for a bypass."
+        }
+    ]
+}

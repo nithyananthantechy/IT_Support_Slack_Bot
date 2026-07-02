@@ -1,0 +1,31 @@
+{
+    "issue_type": "software",
+    "title": "Search Not Returning Results",
+    "description": "Fix issues when Windows search or Outlook search returns no results or incorrect results.",
+    "keywords": [
+        "search not returning results",
+        "incorrect search results",
+        "search not working",
+        "windows search broken",
+        "outlook search empty",
+        "can't find files",
+        "search indexing issue"
+    ],
+    "steps": [
+        {
+            "instruction": "Restart the Windows Search Service: Press Win + R, type `services.msc`, find 'Windows Search', right-click, and select Restart."
+        },
+        {
+            "instruction": "Rebuild the Search Index: Go to Windows Settings → Search → Searching Windows → Advanced Search Indexer Settings → Advanced → Click 'Rebuild'."
+        },
+        {
+            "instruction": "If Outlook search is broken: Close Outlook. Open Control Panel → Indexing Options → Advanced → Rebuild."
+        },
+        {
+            "instruction": "Run the built-in Search Troubleshooter: Settings → Update & Security → Troubleshoot → Additional troubleshooters → Search and Indexing."
+        },
+        {
+            "instruction": "Restart your computer completely, as pending Windows Updates can sometimes break the search bar UI."
+        }
+    ]
+}

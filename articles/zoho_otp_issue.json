@@ -1,0 +1,45 @@
+{
+    "issue_type": "email_otp",
+    "title": "Zoho Mail OTP Not Received",
+    "description": "Troubleshooting OTP or verification code not received for Zoho Mail login.",
+    "keywords": [
+        "zoho mail otp",
+        "otp not received",
+        "zoho otp",
+        "zoho verification code",
+        "zoho code not received",
+        "zoho login otp",
+        "zoho mail verification",
+        "otp not coming",
+        "not receiving otp",
+        "zoho authentication code",
+        "zoho 2fa code",
+        "zoho one time password",
+        "zoho otp issue",
+        "zoho otp problem",
+        "verification code not received zoho",
+        "zoho mail not receiving code"
+    ],
+    "steps": [
+        {
+            "title": "Check Spam or Junk Folder",
+            "instruction": "*📁 Step 1: Check Spam / Junk Folder*\n• Open your inbox (or the backup email you registered with Zoho).\n• Go to the *Spam* or *Junk* folder.\n• Look for an email from Zoho with the subject like \"Your OTP\" or \"Zoho Verification Code\".\n• If found, mark it as *Not Spam* and use the code.\n_Expected: OTP email is found in Spam folder._"
+        },
+        {
+            "title": "Check Your Phone Signal (SMS OTP)",
+            "instruction": "*📱 Step 2: Check Your Phone Signal (If OTP is sent via SMS)*\n• Ensure your phone has a good mobile signal or is connected to the internet (for WhatsApp OTP).\n• Check if your phone number registered with Zoho is correct.\n• Wait up to 3 minutes — SMS OTPs can sometimes be delayed.\n_Expected: OTP arrives on your registered phone._"
+        },
+        {
+            "title": "Use Backup OTP or Authenticator App",
+            "instruction": "*🔐 Step 3: Use Backup OTP or Authenticator App*\n• If you have the *Zoho OneAuth* or *Google Authenticator* app set up, open it.\n• Use the 6-digit code shown in the app — it refreshes every 30 seconds.\n• If you have backup codes saved earlier, use one of them.\n_Expected: Backup OTP or authenticator code allows login._"
+        },
+        {
+            "title": "Try a Different Browser or Clear Cache",
+            "instruction": "*🌐 Step 4: Try a Different Browser or Clear Cache*\n• Try opening Zoho Mail in a different browser (e.g., Chrome, Edge).\n• Or open an *Incognito / Private browsing* window and try again.\n• Clear browser cookies: *Ctrl + Shift + Delete* → Check Cookies → Clear data.\n_Expected: OTP delivery issue is isolated to browser state._"
+        },
+        {
+            "title": "Contact IT Support",
+            "instruction": "*🎫 Step 5: Contact IT Support*\n• If you still haven't received the OTP after trying all steps, it could be an account-level issue.\n• Please raise a support ticket with the following info:\n  - Your Zoho registered email address\n  - The phone number on file (last 4 digits)\n  - Time when you tried to log in\n_Expected: IT team resets OTP delivery or updates account settings._"
+        }
+    ]
+}

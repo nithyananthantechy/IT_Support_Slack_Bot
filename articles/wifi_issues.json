@@ -1,37 +1,49 @@
 {
     "issue_type": "wifi",
     "title": "WiFi Connection Problems",
-    "description": "Troubleshooting wireless network connectivity issues.",
+    "description": "Troubleshooting wireless network connectivity issues including connected but no internet.",
     "keywords": [
         "wifi",
-        "wireless",
         "wi-fi",
-        "connection",
-        "internet",
-        "network",
+        "wireless",
+        "wifi connected but not working",
+        "connected but no internet",
+        "wifi not working",
+        "wifi issue",
+        "wifi problem",
+        "no internet wifi",
+        "internet not working",
+        "no internet access",
+        "wifi connected no internet",
         "slow wifi",
-        "disconnecting"
+        "wifi disconnecting",
+        "wifi dropping",
+        "cannot connect wifi",
+        "wifi keeps disconnecting",
+        "network issue",
+        "network problem",
+        "no network"
     ],
     "steps": [
         {
-            "title": "Toggle WiFi",
-            "instruction": "Turn WiFi OFF, wait 10 seconds, then turn it back ON. Try reconnecting to your network."
+            "title": "Toggle WiFi Off and On",
+            "instruction": "*🔄 Toggle WiFi Off and On*\n• Turn WiFi OFF from your taskbar/settings, wait 10 seconds, then turn it back ON.\n• Try reconnecting to your network and check if internet works.\n_Expected: WiFi reconnects and internet access is restored._"
         },
         {
-            "title": "Forget and Reconnect",
-            "instruction": "In WiFi settings, select your network → Forget Network. Then reconnect by entering the password again."
+            "title": "Forget and Reconnect to Network",
+            "instruction": "*📶 Forget and Reconnect to Network*\n• Open WiFi settings → Click on your network name → Select *Forget Network*.\n• Search for the network again and reconnect by entering the WiFi password.\n_Expected: Fresh connection resolves authentication or config issues._"
         },
         {
-            "title": "Restart Router",
-            "instruction": "Unplug your WiFi router, wait 30 seconds, plug it back in. Wait 2 minutes for it to fully restart."
+            "title": "Restart the WiFi Router",
+            "instruction": "*🔌 Restart the WiFi Router*\n• Unplug the WiFi router from the power socket.\n• Wait 30 seconds, then plug it back in.\n• Wait 2 minutes for it to fully restart before reconnecting.\n_Expected: Router restarts and provides fresh internet connection._"
+        },
+        {
+            "title": "Run Windows Network Troubleshooter",
+            "instruction": "*🛠️ Run Windows Network Troubleshooter*\n• Go to *Settings → System → Troubleshoot → Other Troubleshooters*.\n• Click *Run* next to *Internet Connections*.\n• Follow the on-screen steps to detect and fix issues automatically.\n_Expected: Windows identifies and fixes the network problem._"
         },
         {
             "title": "Check Network Adapter",
-            "instruction": "Windows: Device Manager → Network Adapters → Right-click WiFi adapter → Update Driver or Disable/Enable."
-        },
-        {
-            "title": "Move Closer to Router",
-            "instruction": "WiFi signal weakens with distance and obstacles. Try moving closer to the router to test."
+            "instruction": "*🖥️ Check Network Adapter*\n• Press *Windows + X* → Open *Device Manager*.\n• Expand *Network Adapters* → Right-click your WiFi adapter → Select *Disable Device*, wait 5 seconds, then *Enable Device*.\n• If you see a yellow warning icon, select *Update Driver*.\n_Expected: Adapter resets and reconnects to WiFi._"
         }
     ]
 }

@@ -1,0 +1,19 @@
+{
+  "title": "Hardware or Keyboard Replacement Request",
+  "keywords": ["keyboard", "hardware", "keys", "typing", "broken", "replace", "mouse", "HL", "ground floor", "Kollu"],
+  "issue_type": "hardware",
+  "steps": [
+    {
+      "instruction": "*Check the Device*\n• Verify if the keyboard/mouse is completely unresponsive or physically damaged.\n_Expected: Issue is confirmed as hardware failure._"
+    },
+    {
+      "instruction": "*Try a Different Port*\n• Unplug and reconnect to a different USB port.\n_Expected: Device still fails to work._"
+    },
+    {
+      "instruction": "*Check Wireless Receiver (if applicable)*\n• Ensure the USB wireless dongle is plugged in securely and batteries are charged.\n_Expected: Connection is ruled out._"
+    },
+    {
+      "instruction": "*Raise Hardware Replacement Ticket*\n• Please provide your Employee ID when prompted to raise a ticket for a replacement.\n_Expected: Ticket is created and IT team will dispatch replacement to your location._"
+    }
+  ]
+}

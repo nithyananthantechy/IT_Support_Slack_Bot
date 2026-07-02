@@ -1,0 +1,22 @@
+{
+  "title": "Citrix Workspace Installation Guide",
+  "keywords": ["citrix", "citrix workspace", "install citrix", "citrix workspace install", "workspace app", "virtual desktop", "vdi install", "company apps"],
+  "issue_type": "software_install",
+  "steps": [
+    {
+      "instruction": "*🔐 Step 1: Get IT Approval First (MANDATORY)*\n• You MUST get permission from the IT team before installing ANY software on a company machine.\n• Raise a request to the IT Helpdesk specifying you need Citrix Workspace.\n• Do NOT proceed with installation until IT confirms approval.\n_Expected: You receive IT approval confirmation._"
+    },
+    {
+      "instruction": "*📥 Step 2: Download Citrix Workspace*\n• Once approved, download the latest version from the official Citrix site:\n`https://www.citrix.com/downloads/workspace-app/windows/workspace-app-for-windows-latest.html`\n• Save the `.exe` file to your Downloads folder.\n_Expected: `CitrixWorkspaceApp.exe` is downloaded. (Note: Ensure your Windows 10/11 system has at least 4GB RAM)._"
+    },
+    {
+      "instruction": "*🖱️ Step 3: Run the Installer (Windows)*\n• Right-click the downloaded `CitrixWorkspaceApp.exe` file.\n• Select **Run as Administrator**.\n• When the installer window opens, click **Start**.\n_Expected: The Citrix installation wizard begins._"
+    },
+    {
+      "instruction": "*⚙️ Step 4: Accept License & Install*\n• Check **✔ I accept the license agreement** and click **Next**.\n• In the optional settings screen (Single sign-on, app protection, etc.), normally just click **Next** unless told otherwise by IT.\n• Click **Install**.\n_Expected: Installation completes in 1-3 minutes. Click **Finish**._"
+    },
+    {
+      "instruction": "*🔑 Step 5: Add Your Citrix Account*\n• Open Citrix Workspace.\n• Enter your company server URL (e.g., `https://companyname.cloud.com`) or email.\n• Login using your Username, Password, and Domain (if required).\n_Expected: Apps, Desktops, and Virtual Machines screen appears. Click any app to launch!_"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+    "issue_type": "software",
+    "title": "Data Not Saving",
+    "description": "Fix issues where files or applications are failing to save data locally.",
+    "keywords": [
+        "data not saving in my laptop",
+        "cannot save file",
+        "file won't save",
+        "app not saving data",
+        "unable to save",
+        "save error",
+        "data lost"
+    ],
+    "steps": [
+        {
+            "instruction": "Check your available disk space. Open 'This PC' and ensure your 'C:' drive is not completely full (you need at least a few Gigabytes free)."
+        },
+        {
+            "instruction": "Verify folder permissions. You cannot save files to folders like 'Program Files' or root 'C:\\' without administrator access. Try saving the file to your 'Documents' or 'Desktop'."
+        },
+        {
+            "instruction": "If saving to a Network Drive or OneDrive, ensure you have an active internet connection."
+        },
+        {
+            "instruction": "Check if an antivirus software is blocking the application from writing to the disk."
+        },
+        {
+            "instruction": "Try 'Save As...' and choose a different location or filename. If the original file is open by another user or process, it will be locked."
+        }
+    ]
+}

@@ -1,0 +1,50 @@
+{
+    "issue_type": "mfa_failure",
+    "title": "Multi-Factor Authentication (MFA) Failure",
+    "description": "Troubleshooting MFA failures where the verification code or push notification does not work.",
+    "keywords": [
+        "mfa failure",
+        "mfa not working",
+        "multi factor authentication failure",
+        "multi-factor authentication not working",
+        "authenticator not working",
+        "mfa code not working",
+        "mfa code invalid",
+        "mfa code expired",
+        "mfa push notification not received",
+        "mfa app not working",
+        "microsoft authenticator not working",
+        "google authenticator not working",
+        "zoho oneauth not working",
+        "two factor authentication not working",
+        "2fa not working",
+        "2fa code wrong",
+        "2fa failure",
+        "otp invalid",
+        "verification failed mfa",
+        "mfa login failed",
+        "authentication code not working"
+    ],
+    "steps": [
+        {
+            "title": "Sync Your Phone's Time Setting",
+            "instruction": "*🕐 Step 1: Sync Your Phone's Time Setting*\n• MFA codes are time-based — if your phone clock is even slightly off, the code will be rejected.\n• On Android: *Settings → General Management → Date and Time → Automatic Date and Time → ON*.\n• On iPhone: *Settings → General → Date & Time → Set Automatically → ON*.\n• After syncing, open your authenticator app and try the new code.\n_Expected: Time syncs and authenticator codes match correctly._"
+        },
+        {
+            "title": "Check Phone Internet Connection",
+            "instruction": "*📶 Step 2: Check Phone Internet Connection (Push Notifications)*\n• If your MFA uses push notifications (like Microsoft Authenticator approve/deny), ensure your phone has:\n  - An active Wi-Fi or Mobile Data connection.\n  - Notifications enabled for the Authenticator app.\n• Go to *Phone Settings → Notifications → Authenticator App → Allow Notifications*.\n_Expected: Push notification arrives on your phone for approval._"
+        },
+        {
+            "title": "Use the Manual Code Instead",
+            "instruction": "*🔢 Step 3: Use the Manual 6-Digit Code*\n• Instead of waiting for a push notification, open your Authenticator app manually.\n• Find your account entry and use the *6-digit time-based code* shown.\n• Enter it quickly — codes expire every 30 seconds. Tap/click the code to copy if available.\n_Expected: Manual code entry works even if push notifications are delayed._"
+        },
+        {
+            "title": "Update or Reinstall the Authenticator App",
+            "instruction": "*📲 Step 4: Update or Reinstall the Authenticator App*\n• Open your phone's App Store (iOS) or Google Play Store (Android).\n• Search for your Authenticator app (Microsoft Authenticator / Google Authenticator / Zoho OneAuth).\n• If an update is available, install it.\n• If the issue persists, reinstall the app — but *backup your accounts first* if the app supports it.\n_Expected: Updated or fresh app functions correctly._"
+        },
+        {
+            "title": "Raise an MFA Reset Ticket",
+            "instruction": "*🎫 Step 5: Raise an MFA Reset Ticket with IT*\n• If you lost your phone, changed your phone number, or cannot access your authenticator app:\n• Raise a ticket with IT requesting an *MFA Reset*.\n• Include in your ticket:\n  - Your Employee ID\n  - Your registered mobile number\n  - The account/app that you cannot access (e.g., Microsoft 365, Zoho Mail)\n• IT will verify your identity and reset your MFA so you can re-enroll.\n_Expected: IT resets MFA and sends re-enrollment instructions._"
+        }
+    ]
+}

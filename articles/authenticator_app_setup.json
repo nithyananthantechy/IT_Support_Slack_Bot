@@ -1,0 +1,36 @@
+{
+    "issue_type": "software",
+    "title": "Microsoft/Google Authenticator Setup",
+    "description": "How to set up a mobile authenticator app for Two-Factor Authentication (2FA/MFA).",
+    "keywords": [
+        "authenticator setup",
+        "mfa setup",
+        "2fa setup",
+        "setup authenticator app",
+        "configure mfa",
+        "microsoft authenticator",
+        "google authenticator"
+    ],
+    "steps": [
+        {
+            "title": "Download the App",
+            "instruction": "Download 'Microsoft Authenticator' or 'Google Authenticator' from the iOS App Store or Android Google Play Store on your mobile device."
+        },
+        {
+            "title": "Access Security Settings",
+            "instruction": "On your computer, log into your company account and navigate to Security Info or Two-Factor Authentication settings."
+        },
+        {
+            "title": "Add a New Method",
+            "instruction": "Select 'Add sign-in method' and choose 'Authenticator app'. A QR code will be displayed on your computer screen."
+        },
+        {
+            "title": "Scan the QR Code",
+            "instruction": "Open the Authenticator app on your phone, tap the '+' (plus) icon, select 'Work or school account' (or 'Scan a QR Code'), and scan the code on your screen."
+        },
+        {
+            "title": "Verify Setup",
+            "instruction": "Enter the 6-digit code shown on your phone into the computer prompt to verify the setup."
+        }
+    ]
+}

@@ -1,0 +1,32 @@
+{
+    "title": "File Upload and Formatting Issues",
+    "issue_type": "file_upload",
+    "keywords": [
+        "file upload failed",
+        "unsupported file format",
+        "corrupted file",
+        "file size limit",
+        "upload error",
+        "upload issue",
+        "cannot upload",
+        "won't upload",
+        "file attached"
+    ],
+    "steps": [
+        {
+            "instruction": "Check the file size limit. Many systems restrict uploads to 25MB or 50MB. If your file is larger, try compressing it into a `.zip` archive before uploading."
+        },
+        {
+            "instruction": "Verify the file format. Ensure you are uploading a supported file type (e.g., `.pdf`, `.docx`, `.jpg`, `.png`). Unsupported formats will be rejected."
+        },
+        {
+            "instruction": "Ensure the file isn't corrupted. Try opening the file on your local computer. If it won't open for you, it is damaged and needs to be recreated or re-downloaded."
+        },
+        {
+            "instruction": "Clear your web browser cache and cookies, then refresh the page and attempt the upload again."
+        },
+        {
+            "instruction": "Try using an Incognito/Private window or a completely different web browser to rule out interference from browser extensions."
+        }
+    ]
+}

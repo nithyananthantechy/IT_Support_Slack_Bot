@@ -1,0 +1,35 @@
+{
+    "issue_type": "software",
+    "title": "Slack Login Issue",
+    "description": "Troubleshooting steps for users unable to log into Slack.",
+    "keywords": [
+        "slack login",
+        "slack login issue",
+        "slack sign in",
+        "cannot log into slack",
+        "can't access slack",
+        "slack authentication"
+    ],
+    "steps": [
+        {
+            "title": "Check Credentials",
+            "instruction": "Verify that your email and password are correct. Ensure Caps Lock is off."
+        },
+        {
+            "title": "Clear Browser Cache / App Data",
+            "instruction": "If using the web version, clear your browser cache. If using the desktop app, go to Help -> Troubleshooting -> Clear Cache and Restart."
+        },
+        {
+            "title": "SSO / Workspace URL",
+            "instruction": "Ensure you are logging into the correct workspace URL (e.g., desicrew.slack.com) and using Single Sign-On (SSO) if required by the company."
+        },
+        {
+            "title": "Update Slack App",
+            "instruction": "If you are using the desktop or mobile app, ensure it is updated to the latest version."
+        },
+        {
+            "title": "Contact IT Support",
+            "instruction": "If you are still unable to log in, your account might be disabled or require a password reset. Please raise a ticket."
+        }
+    ]
+}

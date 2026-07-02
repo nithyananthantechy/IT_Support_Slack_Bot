@@ -8,7 +8,9 @@
         "cannot hear in meet",
         "mic not working meet",
         "meet connection failed",
-        "screen share meet"
+        "screen share meet",
+        "gmeet not working",
+        "gmeet"
     ],
     "steps": [
         {

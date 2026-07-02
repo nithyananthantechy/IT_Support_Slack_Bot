@@ -1,0 +1,35 @@
+{
+    "issue_type": "software",
+    "title": "Clear Browser Cache and Cookies",
+    "description": "Generic guide on how to clear cache and cookies to resolve web application login and performance issues.",
+    "keywords": [
+        "clear cache",
+        "clear cookies",
+        "browser cache",
+        "chrome cache",
+        "edge cache",
+        "delete browser history"
+    ],
+    "steps": [
+        {
+            "title": "Open Clear Browsing Data Menu",
+            "instruction": "In Chrome or Microsoft Edge, press `Ctrl + Shift + Delete` on your keyboard to open the 'Clear browsing data' menu."
+        },
+        {
+            "title": "Select Time Range",
+            "instruction": "Set the 'Time range' dropdown menu to 'All time' for the best results."
+        },
+        {
+            "title": "Choose What to Clear",
+            "instruction": "Check the boxes for 'Cookies and other site data' and 'Cached images and files'. You can uncheck 'Browsing history' if you want to keep it."
+        },
+        {
+            "title": "Clear Data",
+            "instruction": "Click the 'Clear data' button and wait for the process to finish."
+        },
+        {
+            "title": "Restart Browser",
+            "instruction": "Completely close the browser and reopen it. Try accessing the web application again."
+        }
+    ]
+}

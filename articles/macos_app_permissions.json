@@ -8,7 +8,9 @@
         "mac camera not working",
         "mac microphone blocked",
         "full disk access mac",
-        "gatekeeper mac"
+        "gatekeeper mac",
+        "showing blocked",
+        "app blocked"
     ],
     "steps": [
         {

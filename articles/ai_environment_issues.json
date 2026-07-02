@@ -1,5 +1,5 @@
 {
-    "issue_type": "software",
+    "issue_type": "ai_environment",
     "title": "AI Environment & Dependency Conflicts",
     "description": "Resolve Python environment, library mismatch, and missing dependency errors.",
     "keywords": [

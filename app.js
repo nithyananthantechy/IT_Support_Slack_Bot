@@ -68,7 +68,7 @@ const logProcess = (msg) => {
 /**
  * Shared message processing logic for DMs and Channel Mentions
  */
-async function processMessage(text, userId, channelId, say, client, logger, cachedIntent = null) {
+async function processMessage(text, userId, channelId, messageTs, say, client, logger, cachedIntent = null) {
     // Helper for channel-aware responses
     const isDM = channelId.startsWith('D'); // DMs usually start with D, but using channel_type is better if available.
     // However, channelId is passed from app_mention (C...) or app.message (D...).
@@ -97,57 +97,54 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
         }
     };
 
+    // Helper to delete the user's message containing sensitive info (only in channels)
+    const deleteUserMessage = async () => {
+        if (!isDM && messageTs) {
+            try {
+                await client.chat.delete({
+                    channel: channelId,
+                    ts: messageTs
+                });
+                logProcess(`Deleted sensitive user message ${messageTs} in channel ${channelId}`);
+            } catch (err) {
+                console.error("Could not delete message (missing permissions or TS):", err.message);
+            }
+        }
+    };
+
     try {
         logProcess(`Processing message from ${userId} in ${channelId}: "${text}"`);
         const state = conversationManager.getConversationState(userId);
 
         // --- 0. Handle Data Gathering States ---
 
-        // Quick Ticket Flow (Domain Lock, Password Reset) - Only needs Employee ID
-        if (state.state === 'AWAITING_EMP_ID_QUICK') {
-            const empId = text.trim();
-            logProcess(`Gathered Employee ID for quick ticket: ${empId}`);
 
-            const pendingData = { ...state.pendingTicketData, empId };
-            // Quick tickets skip hostname, go straight to finalization
-            return await finalizeTicket(pendingData, userId, channelId, smartSay, say, client);
-        }
 
-        // Regular Ticket Flow
-        if (state.state === 'AWAITING_EMP_ID') {
-            const empId = text.trim();
-            logProcess(`Gathered Employee ID: ${empId}`);
 
-            const pendingData = { ...state.pendingTicketData, empId };
-
-            // Check if we also need Hostname (Non-biometric system issues)
-            if (pendingData.type !== 'biometric') {
-                conversationManager.updateConversationState(userId, {
-                    state: 'AWAITING_HOSTNAME',
-                    pendingTicketData: pendingData
-                });
-                await smartSay({
-                    text: "Got it. Now, could you please provide your *System Hostname*? \n\n_Tip: To find it, type `hostname` in your terminal/command prompt or check the sticker on your machine._"
-                });
-                return;
-            } else {
-                // Biometric only needs Emp ID
-                return await finalizeTicket(pendingData, userId, channelId, smartSay, say, client);
-            }
-        }
-
-        if (state.state === 'AWAITING_HOSTNAME') {
-            const hostname = text.trim();
-            logProcess(`Gathered Hostname: ${hostname}`);
-
-            const pendingData = { ...state.pendingTicketData, hostname };
-            return await finalizeTicket(pendingData, userId, channelId, smartSay, say, client);
-        }
 
         // 0.5 INSTANT KNOWLEDGE BASE MATCH (Prioritize speed for known issues)
-        // Skip for "new" requests or "tickets" to allow AI to handle them as Quick Tickets
-        const isRequest = text.toLowerCase().includes('new') || text.toLowerCase().includes('request') ||
-            text.toLowerCase().includes('ticket') || text.toLowerCase().includes('raise');
+        // Skip for "new" requests, "tickets", "install" or sensitive issues (domain lock/password reset) to allow directly creating tickets
+        const lowerText = text.toLowerCase();
+        
+        const isDomainLock = /domain.{0,4}lock|domainlock(ed)?|unlock.{0,10}domain|unlock.{0,10}account|account.{0,10}disable(d)?|locked.{0,10}out|can'?t.{0,10}access.{0,10}account/i.test(lowerText) &&
+            !/email.{0,20}(account|mail).{0,15}lock|email.{0,20}lock|mail.{0,20}lock|zoho.{0,20}lock|outlook.{0,20}lock|gmail.{0,20}lock/i.test(lowerText);
+        const isPasswordReset = /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,10}pa?s+w[oa]?r?d?|pwd.{0,4}reset|forgot.{0,10}pa?s+w[oa]?r?d?|pa?s+w[oa]?r?d?.{0,10}expire(d)?/i.test(lowerText);
+        
+        const isBiometricAccessRequest = lowerText.includes('provide biometric') || lowerText.includes('grant biometric') ||
+            lowerText.includes('biometric access') || lowerText.includes('biometric request') ||
+            lowerText.includes('new biometric') || /need.{0,10}biometric/i.test(lowerText);
+            
+        const socialApps = ['whatsapp', 'whats app', 'instagram', 'facebook', 'telegram', 'twitter', 'linkedin', 'social media', 'messenger'];
+        const hasSocialApp = socialApps.some(app => lowerText.includes(app));
+        const isSocialAccessRequest = hasSocialApp && (/need.{0,15}access|request.{0,15}access|provide.{0,15}access|grant.{0,15}access|want.{0,15}access|enable.{0,15}access/i.test(lowerText) || 
+            lowerText.includes('access') || lowerText.includes('unblock') || lowerText.includes('enable'));
+
+        const isInstallRequest = lowerText.includes('install') && !/(already|have|has|had).{0,15}install|login/i.test(lowerText);
+
+        const isRequest = lowerText.includes('new ') || lowerText.includes('request') ||
+            lowerText.includes('ticket') || lowerText.includes('raise') || isInstallRequest ||
+            isDomainLock || isPasswordReset || isBiometricAccessRequest || isSocialAccessRequest;
+
 
         const article = isRequest ? null : knowledgeBase.findArticle(text);
         if (article && article.steps && article.steps.length > 0) {
@@ -175,11 +172,42 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
         const isQuickTicket = intent.action === 'quick_ticket';
         const isTicketRequest = text.toLowerCase().includes('ticket') || text.toLowerCase().includes('raise') || intent.action === 'create_ticket';
 
+        if (intent.action === 'clarification_needed') {
+            await smartSay({
+                text: "I need a bit more detail to help you effectively. Could you please clarify what is not working? For example, which application is showing the error, or where exactly are you not receiving notifications?"
+            });
+            return;
+        }
+
         if (isQuickTicket) {
-            // Quick ticket flow: Only ask for Employee ID (skip hostname)
-            const ticketType = intent.issue_type; // domain_lock or password_reset
+            const ticketType = intent.issue_type; // domain_lock, password_reset, biometric, software_install
+
+            // Software install: Ask if Personal or Company laptop
+            if (ticketType === 'software_install') {
+                const installArticle = knowledgeBase.findArticle(text) || knowledgeBase.findArticleByIssueType('software_install');
+
+                conversationManager.updateConversationState(userId, {
+                    state: 'AWAITING_LAPTOP_TYPE',
+                    pendingTicketData: {
+                        subject: `Software Installation Approval Required`,
+                        description: `User requested a software installation.\n\nOriginal request: "${text}"`,
+                        type: 'software_install',
+                        originalText: text,
+                        isSoftwareInstall: true,
+                        pendingInstallArticle: installArticle
+                    }
+                });
+
+                await smartSay({
+                    text: "Are you installing this on a Personal Laptop or a Company Laptop?",
+                    blocks: messageViews.laptopTypeSelection("Are you installing this on a Personal Laptop or a Company Laptop?")
+                });
+                return;
+            }
+
+            // Domain Lock / Password Reset / Biometric / Social Media: ask for Emp ID, Location, Email
             conversationManager.updateConversationState(userId, {
-                state: 'AWAITING_EMP_ID_QUICK',
+                state: 'AWAITING_MODAL_DETAILS',
                 pendingTicketData: {
                     subject: '', // Will be formatted in finalizeTicket
                     description: `User request: ${text}`,
@@ -190,9 +218,12 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
             });
 
             const ticketTypeName = ticketType === 'domain_lock' ? 'Domain Lock' :
-                ticketType === 'password_reset' ? 'Password Reset' : 'Biometric Access';
+                ticketType === 'password_reset' ? 'Password Reset' : 
+                ticketType === 'biometric' ? 'Biometric Access' : 'Social Media Access';
+            
             await smartSay({
-                text: `I'll help you raise a ${ticketTypeName} request. Please provide your **Employee ID**:`
+                text: `I'll help you raise a ${ticketTypeName} request.`,
+                blocks: messageViews.requestDetailsButton(`I'll help you raise a ${ticketTypeName} request.`)
             });
             return;
         }
@@ -207,7 +238,7 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
         if (isTicketRequest) {
             // Initiate data gathering flow instead of immediate creation
             conversationManager.updateConversationState(userId, {
-                state: 'AWAITING_EMP_ID',
+                state: 'AWAITING_MODAL_DETAILS',
                 pendingTicketData: {
                     subject: `Support Request: ${intent.issue_type || 'General'}`,
                     description: `User message: ${text}`,
@@ -217,7 +248,8 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
             });
 
             await smartSay({
-                text: `I'll help you raise a ticket for that. First, could you please provide your **Employee ID**?`
+                text: "I'll help you raise a ticket for that.",
+                blocks: messageViews.requestDetailsButton(`I'll help you raise a ticket for that.`)
             });
             return;
         }
@@ -227,9 +259,13 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
             let article = null;
 
             try {
-                // Step 1: SEARCH BY ISSUE TYPE FROM AI (Original text check already done at top)
-                if (intent.issue_type) {
-                    console.log(`🔍 Step 2: Searching by issue_type: "${intent.issue_type}"`);
+                // Step 1: SEARCH BY ORIGINAL TEXT FROM USER (Since it may have been skipped earlier)
+                console.log(`🔍 Step 2: Searching KB by original text: "${text}"`);
+                article = knowledgeBase.findArticle(text);
+
+                // Step 2: SEARCH BY ISSUE TYPE FROM AI (If no article found yet)
+                if (!article && intent.issue_type) {
+                    console.log(`🔍 Step 3: Searching by issue_type: "${intent.issue_type}"`);
                     article = knowledgeBase.findArticle(intent.issue_type);
                 }
 
@@ -295,12 +331,19 @@ async function processMessage(text, userId, channelId, say, client, logger, cach
                 }
 
                 if (dynamicSteps && dynamicSteps.length > 0) {
+                    const newArticleId = `auto_${intent.issue_type || 'general'}_${Date.now()}`;
                     article = {
-                        id: `dynamic_${Date.now()}`,
-                        title: `Help: ${text.slice(0, 50)}`,
+                        id: newArticleId,
+                        title: `Auto-Learned: ${text.length > 40 ? text.slice(0, 37) + '...' : text}`,
+                        description: `Automatically generated troubleshooting steps for: ${text}`,
+                        issue_type: intent.issue_type || "general",
+                        keywords: text.toLowerCase().split(/[\s,]+/).filter(w => w.length >= 3),
                         steps: dynamicSteps
                     };
-                    console.log(`✅ Generated ${dynamicSteps.length} AI-specific steps`);
+                    
+                    // 🧠 AI Self-Learning: Save to KB
+                    await knowledgeBase.saveArticle(article);
+                    console.log(`✅ Generated and saved ${dynamicSteps.length} AI-specific steps as article: ${newArticleId}`);
 
                     conversationManager.updateConversationState(userId, {
                         step: 1,
@@ -418,9 +461,10 @@ async function finalizeTicket(data, userId, channelId, smartSay, say, client) {
             .join('\n');
 
         if (data.isQuickTicket) {
-            // Quick tickets: "Domain Lock - EMP123", "Password Reset - EMP123", or "Biometric Access - EMP123"
+            // Quick tickets: "Domain Lock - EMP123", "Password Reset - EMP123", "Biometric Access - EMP123", or "Social Media Access - EMP123"
             const ticketTypeName = data.type === 'domain_lock' ? 'Domain Lock' :
-                data.type === 'password_reset' ? 'Password Reset' : 'Biometric Access';
+                data.type === 'password_reset' ? 'Password Reset' : 
+                data.type === 'biometric' ? 'Biometric Access' : 'Social Media Access';
             ticketSubject = `${ticketTypeName} - ${data.empId}`;
             
             // Preset routing for quick tickets
@@ -449,6 +493,8 @@ async function finalizeTicket(data, userId, channelId, smartSay, say, client) {
         let ticketDescription = `
 User Data:
 - Employee ID: ${data.empId}
+- Location: ${data.location || 'N/A (Quick Ticket)'}
+- Email: ${data.email || 'N/A'}
 - System Hostname: ${data.hostname || 'N/A (Quick Ticket or Biometric Issue)'}
 
 Original Issue:
@@ -463,16 +509,24 @@ ${data.description}
         const ticket = await freshservice.createTicket({
             subject: ticketSubject,
             description: ticketDescription,
-            email: requesterEmail,
+            email: data.email || requesterEmail,
             name: requesterName
         });
 
         // Use say (public) for ticket confirmation so team knows
-        const result = await say({
-            channel: channelId,
-            text: `Support ticket #${ticket.id} created successfully.`,
-            blocks: messageViews.ticketCreated(ticket.id)
-        });
+        let result;
+        if (data.isSoftwareInstall) {
+            result = await say({
+                channel: channelId,
+                text: `🔐 *Software Installation Request Created!*\n\nSupport ticket #*${ticket.id}* has been created for your software install request.\n\n• An IT agent will review and reach out to you shortly.\n• Our IT team agent will reach out to you; they will install the software for you.`
+            });
+        } else {
+            result = await say({
+                channel: channelId,
+                text: `Support ticket #${ticket.id} created successfully.`,
+                blocks: messageViews.ticketCreated(ticket.id)
+            });
+        }
 
         // Store ticket-user mapping with thread timestamp for webhook notifications
         const ticketUserMap = require('./services/ticketUserMap');
@@ -530,7 +584,7 @@ app.event('app_mention', async ({ event, say, client, logger }) => {
     const { cleanedText } = getMessageInfo(event.text);
     // Add a flag to the event to signal it's handled (useful if combined with message event)
     event.is_handled_as_mention = true;
-    await processMessage(cleanedText, event.user, event.channel, say, client, logger);
+    await processMessage(cleanedText, event.user, event.channel, event.ts, say, client, logger);
 });
 
 // Message Context (DMs and Proactive Channels)
@@ -538,8 +592,8 @@ app.message(async ({ message, say, client, logger }) => {
     logProcess(`app.message triggered! Channel: ${message.channel}, Type: ${message.channel_type}, BotID: ${message.bot_id}`);
     console.log(`DEBUG: app.message triggered! Channel: ${message.channel}, Type: ${message.channel_type}, BotID: ${message.bot_id}`);
 
-    // Ignore bot messages
-    if (message.bot_id) return;
+    // Ignore bot messages and events without a user (e.g. message_deleted)
+    if (message.bot_id || !message.user) return;
 
     // Check if this is a reply in a thread associated with a ticket
     if (message.thread_ts) {
@@ -596,7 +650,7 @@ app.message(async ({ message, say, client, logger }) => {
     // 2. We are already in a conversation (gathering info or troubleshooting)
     // 3. Proactive check (AI thinks it's an IT issue)
     if (isDM || isInConversation) {
-        return await processMessage(cleanedText, userId, channelId, say, client, logger);
+        return await processMessage(cleanedText, userId, channelId, message.ts, say, client, logger);
     }
 
     // For messages in channels that are NOT mentions, we only react if it looks like an IT issue
@@ -608,31 +662,37 @@ app.message(async ({ message, say, client, logger }) => {
 
     if (isGreeting) {
         console.log(`⚡ Greeting detected: "${cleanedText}". Responding instantly.`);
-        return await processMessage(cleanedText, userId, channelId, say, client, logger);
+        return await processMessage(cleanedText, userId, channelId, message.ts, say, client, logger);
     }
 
     // Knowledge Base Check
     // Skip for "new" or "request" to allow AI to handle them as tickets
-    const shouldSkipKB = cleanedText.toLowerCase().includes('new') ||
-        cleanedText.toLowerCase().includes('request') ||
-        cleanedText.toLowerCase().includes('ticket') ||
-        cleanedText.toLowerCase().includes('raise');
+    const lowerTextForKB = cleanedText.toLowerCase();
+    const isInstallReqStr = lowerTextForKB.includes('install') && !/(already|have|has|had).{0,15}install|login/i.test(lowerTextForKB);
+
+    const shouldSkipKB = lowerTextForKB.includes('new') ||
+        lowerTextForKB.includes('request') ||
+        lowerTextForKB.includes('ticket') ||
+        lowerTextForKB.includes('raise') ||
+        isInstallReqStr ||
+        /domain.{0,4}lock|domainlock(ed)?/i.test(lowerTextForKB) ||
+        /pa?s+w[oa]?r?d?.{0,4}reset|reset.{0,4}pa?s+w[oa]?r?d?/i.test(lowerTextForKB);
 
     const articleMatch = shouldSkipKB ? null : knowledgeBase.findArticle(cleanedText);
     if (articleMatch) {
         console.log(`✅ Proactive KB match: ${articleMatch.title}`);
-        return await processMessage(cleanedText, userId, channelId, say, client, logger);
+        return await processMessage(cleanedText, userId, channelId, message.ts, say, client, logger);
     }
 
     // Proactive Support AI check (only if no KB match)
     try {
         const intent = await aiService.detectIntent(cleanedText, { isDM });
         logProcess(`Proactive intent check for "${cleanedText}": ${JSON.stringify(intent)}`);
+        const isTopicMatch = intent.action === 'troubleshoot' || intent.action === 'quick_ticket' || intent.action === 'create_ticket';
 
-        // If it's an IT issue, process it
-        if (intent.action === 'troubleshoot' || intent.action === 'create_ticket' || intent.action === 'quick_ticket' || intent.needs_troubleshooting || (intent.action === 'answer' && intent.direct_answer)) {
-            // Pass the intent to processMessage to avoid second call
-            return await processMessage(cleanedText, userId, channelId, say, client, logger, intent);
+        if (isTopicMatch) {
+            console.log(`✅ Proactive AI match: ${intent.issue_type} (Action: ${intent.action})`);
+            return await processMessage(cleanedText, userId, channelId, message.ts, say, client, logger, intent);
         }
     } catch (err) {
         console.error("Proactive intent check failed:", err);
@@ -653,6 +713,91 @@ app.action('report_issue', async ({ body, client, ack }) => {
     } catch (error) {
         console.error(error);
     }
+});
+
+// Button: Company Laptop Install
+app.action('company_laptop_install', async ({ body, ack, client }) => {
+    await ack();
+    const userId = body.user.id;
+    const channelId = body.channel.id;
+    const isDM = channelId.startsWith('D');
+    
+    // Change state to AWAITING_MODAL_DETAILS
+    conversationManager.updateConversationState(userId, {
+        state: 'AWAITING_MODAL_DETAILS'
+    });
+
+    const msgArgs = {
+        text: "I'll help you request IT Approval for this software installation.",
+        blocks: messageViews.requestDetailsButton(`I'll help you request IT Approval for this software installation on your Company Laptop.`)
+    };
+
+    if (isDM) {
+        await client.chat.postMessage({ channel: channelId, ...msgArgs });
+    } else {
+        await client.chat.postEphemeral({ channel: channelId, user: userId, ...msgArgs });
+    }
+});
+
+// Button: Personal Laptop Install
+app.action('personal_laptop_install', async ({ body, ack, client }) => {
+    await ack();
+    const userId = body.user.id;
+    const channelId = body.channel.id;
+    const isDM = channelId.startsWith('D');
+    const state = conversationManager.getConversationState(userId);
+
+    const article = state.pendingTicketData?.pendingInstallArticle;
+    
+    const smartSay = async (args) => {
+        if (typeof args === 'string') args = { text: args };
+        if (isDM) {
+            return await client.chat.postMessage({ channel: channelId, ...args });
+        } else {
+            return await client.chat.postEphemeral({ channel: channelId, user: userId, ...args });
+        }
+    };
+
+    if (!article || !article.steps || article.steps.length === 0) {
+        await smartSay("I couldn't find the installation steps for this software. I'll help you raise a ticket instead.");
+        conversationManager.updateConversationState(userId, { state: 'AWAITING_MODAL_DETAILS' });
+        await smartSay({
+            blocks: messageViews.requestDetailsButton(`I'll help you request IT Approval.`)
+        });
+        return;
+    }
+
+    // Clone the article to avoid modifying the original cached version
+    const activeArticle = JSON.parse(JSON.stringify(article));
+
+    // Remove the "Get IT Approval First" step if it's a personal laptop
+    if (activeArticle.steps && activeArticle.steps.length > 0) {
+        if (activeArticle.steps[0].title?.includes('IT Approval') || activeArticle.steps[0].instruction?.includes('Get IT Approval')) {
+            activeArticle.steps.shift(); // Remove the first step
+        }
+    }
+
+    if (activeArticle.steps.length === 0) {
+        await smartSay("I couldn't find the installation steps for this software. I'll help you raise a ticket instead.");
+        conversationManager.updateConversationState(userId, { state: 'AWAITING_MODAL_DETAILS' });
+        await smartSay({
+            blocks: messageViews.requestDetailsButton(`I'll help you request IT Approval.`)
+        });
+        return;
+    }
+
+    conversationManager.updateConversationState(userId, {
+        step: 1,
+        currentArticle: activeArticle,
+        ticketCreated: false,
+        attempts: 0
+    });
+
+    const firstStep = activeArticle.steps[0];
+    await smartSay({
+        text: `You can proceed with the installation yourself! Let's get started.`,
+        blocks: messageViews.troubleshootingStep(firstStep.instruction, 1, activeArticle.steps.length, activeArticle.id)
+    });
 });
 
 // Button: Step Solved
@@ -725,7 +870,7 @@ app.action('step_failed', async ({ body, ack, say, action, client }) => {
             const reason = attempts >= 5 ? "Reached maximum troubleshooting steps" : "No more steps in guide";
 
             conversationManager.updateConversationState(userId, {
-                state: 'AWAITING_EMP_ID',
+                state: 'AWAITING_MODAL_DETAILS',
                 pendingTicketData: {
                     subject: `Unresolved Issue: ${article.title}`,
                     description: `User attempted troubleshooting for ${article.title} but was not resolved after ${attempts} steps.\n\nSummary: ${reason}`,
@@ -733,7 +878,9 @@ app.action('step_failed', async ({ body, ack, say, action, client }) => {
                 }
             });
 
-            await say(`It looks like we haven't been able to resolve this yet (${reason}). I'll help you raise a support ticket. First, could you please provide your **Employee ID**?`);
+            await smartSay({
+                blocks: messageViews.requestDetailsButton(`It looks like we haven't been able to resolve this yet (${reason}). I'll help you raise a support ticket.`)
+            });
         }
     } else {
         // Show next step
@@ -744,6 +891,108 @@ app.action('step_failed', async ({ body, ack, say, action, client }) => {
             text: `Let's try the next step.`,
             blocks: messageViews.troubleshootingStep(nextStep.instruction, nextStepIndex + 1, article.steps.length, article.id)
         });
+    }
+});
+
+// Button: Open Details Modal
+app.action('open_details_modal', async ({ body, ack, client }) => {
+    await ack();
+    const userId = body.user.id;
+    const channelId = body.channel.id;
+    const state = conversationManager.getConversationState(userId);
+
+    if (!state || state.state !== 'AWAITING_MODAL_DETAILS' || !state.pendingTicketData) {
+        try {
+            await client.chat.postEphemeral({
+                channel: channelId,
+                user: userId,
+                text: "Your session has expired or no pending request was found. Please start over."
+            });
+        } catch (e) {
+            console.error("Expired session notify error:", e);
+        }
+        return;
+    }
+
+    // Ask for Hostname for everything EXCEPT identity-only issues like domain lock, password reset, biometric, and social media access
+    const noHostnameTypes = ['domain_lock', 'password_reset', 'biometric', 'social_media_access'];
+    const requiresHostname = !noHostnameTypes.includes(state.pendingTicketData.type);
+    const isSoftwareInstall = state.pendingTicketData.type === 'software_install';
+
+    try {
+        await client.views.open({
+            trigger_id: body.trigger_id,
+            view: modalViews.collectDetailsModal(requiresHostname, isSoftwareInstall)
+        });
+        
+        // Save channelId explicitly since modal submissions lose channel interaction context
+        conversationManager.updateConversationState(userId, { channelId: channelId });
+    } catch (error) {
+        console.error("Error opening details modal:", error);
+    }
+});
+
+// View Submission: Collect Details Modal
+app.view('submit_details', async ({ body, ack, view, client }) => {
+    await ack();
+    const userId = body.user.id;
+    const state = conversationManager.getConversationState(userId);
+
+    if (!state || !state.pendingTicketData) {
+        return;
+    }
+
+    const values = view.state.values;
+    const empId = values.emp_id_block.emp_id.value;
+    const location = values.location_block.location.value;
+    const email = values.email_block.email.value;
+    
+    let hostname = null;
+    const privateMetadata = JSON.parse(view.private_metadata || "{}");
+    if (privateMetadata.requiresHostname) {
+        const rawHostname = values.hostname_block.hostname.value;
+        const isUnknown = rawHostname.toLowerCase().includes("don't know") || rawHostname.toLowerCase().includes("dont know") ||
+                rawHostname.toLowerCase().includes("no idea") || rawHostname.toLowerCase().includes("not sure") || rawHostname.toLowerCase().includes("unknown") ||
+                rawHostname.toLowerCase().includes("serial number") || rawHostname.toLowerCase().includes("n/a") || rawHostname.trim() === '-';
+        hostname = isUnknown ? 'Unknown (User Not Sure)' : rawHostname.trim();
+    }
+
+    const pendingData = { 
+        ...state.pendingTicketData, 
+        empId, 
+        location, 
+        email 
+    };
+    
+    if (hostname) {
+        pendingData.hostname = hostname;
+    }
+
+    const channelId = state.channelId || userId;
+    const isDM = channelId.startsWith('D');
+    
+    const say = async (args) => {
+        if (typeof args === 'string') args = { text: args };
+        return await client.chat.postMessage({ channel: channelId, ...args });
+    };
+
+    const smartSay = async (args) => {
+        if (typeof args === 'string') args = { text: args };
+        if (isDM) {
+            return await say(args);
+        } else {
+            return await client.chat.postEphemeral({
+                channel: channelId,
+                user: userId,
+                ...args
+            });
+        }
+    };
+
+    try {
+        await finalizeTicket(pendingData, userId, channelId, smartSay, say, client);
+    } catch (error) {
+        console.error("Error in finalizeTicket from modal:", error);
     }
 });
 
@@ -844,7 +1093,12 @@ webhookApp.post('/freshservice/webhook', async (req, res) => {
             console.log(`🔐 Processing sensitive ticket ${ticketId} of type ${ticketType}`);
 
             // Fetch the latest reply from Freshservice to show user the automation response
-            const latestReply = await freshservice.getLatestTicketReply(ticketId);
+            let latestReply = await freshservice.getLatestTicketReply(ticketId);
+
+            if (!latestReply && latestNote) {
+                console.log(`ℹ️ Falling back to webhook provided latest_note`);
+                latestReply = latestNote;
+            }
 
             if (!latestReply) {
                 console.log(`⚠️ No reply found for sensitive ticket ${ticketId}, skipping notification`);

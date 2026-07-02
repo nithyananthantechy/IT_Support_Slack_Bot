@@ -1,0 +1,22 @@
+{
+  "title": "Software Installation Request",
+  "keywords": ["install", "installation", "software request", "need software", "wps", "wps office", "need to install", "install package", "request software", "tool install", "application install", "how to install", "adobe", "adobe reader", "acrobat"],
+  "issue_type": "software_install",
+  "steps": [
+    {
+      "instruction": "*🔐 Step 1: Get IT Approval First (MANDATORY)*\n• You MUST get permission from the IT team before installing ANY software on a company machine.\n• Raise a request to the IT Helpdesk specifying the software name and reason.\n• Do NOT download or install anything until IT confirms approval.\n_Expected: You receive IT approval confirmation._"
+    },
+    {
+      "instruction": "*📋 Step 2: Check if the Software is IT-Approved*\n• Only IT-approved software can be installed on company systems.\n• Common approved tools: WPS Office, 7-Zip, VLC, Adobe Reader, Zoom, Teams, Slack.\n• If the tool is NOT on the approved list, IT may need to evaluate it first.\n_Expected: Software is confirmed as approved by IT._"
+    },
+    {
+      "instruction": "*🖥️ Step 3: Check If You Have Admin Rights*\n• Try right-clicking the installer → *Run as Administrator*.\n• If it asks for an admin password, you need IT to install it for you remotely or in-person.\n_Expected: Installer runs or you confirm you need IT assistance._"
+    },
+    {
+      "instruction": "*📥 Step 4: Download and Install*\n• Use only the official download link provided by IT or the software vendor.\n• Run the downloaded `.exe` or installer file, accept the license agreement, and click *Install Now*.\n• Wait for the installation to complete (2-5 minutes).\n_Expected: Software installs successfully and is ready to use._"
+    },
+    {
+      "instruction": "*✅ Step 5: Notify IT After Install*\n• Once installed, inform the IT Helpdesk that the installation is complete.\n• If you face any error during installation, raise a ticket with the error screenshot.\n_Expected: IT is informed and can verify the install if needed._"
+    }
+  ]
+}

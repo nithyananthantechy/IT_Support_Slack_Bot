@@ -1,0 +1,44 @@
+{
+    "issue_type": "social_media_issue",
+    "title": "Social Media / Messaging App Troubleshooting",
+    "description": "Troubleshooting steps for WhatsApp, Instagram, Facebook, and other social media or messaging apps not working.",
+    "keywords": [
+        "whatsapp not working",
+        "whatsapp issue",
+        "whatsapp problem",
+        "instagram not working",
+        "instagram issue",
+        "facebook not working",
+        "facebook issue",
+        "social media not working",
+        "social media issue",
+        "telegram not working",
+        "telegram issue",
+        "messenger not working",
+        "messenger issue",
+        "twitter not working",
+        "linkedin not working"
+    ],
+    "steps": [
+        {
+            "title": "Check Internet Connection",
+            "instruction": "Make sure your internet/Wi-Fi is working. Try opening a website or another app. If network is down, fix that first."
+        },
+        {
+            "title": "Clear Cache & Restart App",
+            "instruction": "Close the app completely and reopen it.\nOn mobile: Go to Settings → Apps → [App Name] → Storage → Clear Cache.\nOn desktop: Close and reopen the desktop/web version."
+        },
+        {
+            "title": "Update the App",
+            "instruction": "Check if an app update is available.\nMobile: Open Play Store / App Store → Search for the app → Tap 'Update' if available.\nDesktop: Check the app's settings for updates."
+        },
+        {
+            "title": "Check for Service Outages",
+            "instruction": "The app's servers might be down. Check https://downdetector.com or the app's official status page to see if others are facing the same issue."
+        },
+        {
+            "title": "Raise Support Ticket",
+            "instruction": "If the app is still not working after all steps, raise a support ticket with: App name, device type, error message (if any), and steps already tried."
+        }
+    ]
+}

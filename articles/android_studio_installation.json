@@ -1,0 +1,29 @@
+{
+  "title": "Android Studio Installation Guide",
+  "keywords": [
+    "android studio",
+    "install android studio",
+    "android dev"
+  ],
+  "issue_type": "software_install",
+  "steps": [
+    {
+      "instruction": "*\ud83d\udd10 Step 1: Get IT Approval First (MANDATORY)*\n\u2022 You MUST get permission from the IT team before installing ANY software on a company machine.\n\u2022 Raise a request to the IT Helpdesk specifying you need Android Studio.\n\u2022 Do NOT proceed with installation until IT confirms approval.\n_Expected: You receive IT approval confirmation._"
+    },
+    {
+      "instruction": "*\ud83d\udce5 Step 2: Download Android Studio*\n\u2022 Once approved, download the setup file from:\n`https://developer.android.com/studio`\n\u2022 Save the file locally.\n_Expected: Download finishes._"
+    },
+    {
+      "instruction": "*\ud83d\uddb1\ufe0f Step 3: Installation Instruction*\n\u2022 Download the Android Studio setup file.\n_Expected: Step 3 is completed._"
+    },
+    {
+      "instruction": "*\u2699\ufe0f Step 4: Installation Instruction*\n\u2022 Run the installer and leave the default components (Android Virtual Device) checked.\n_Expected: Step 4 is completed._"
+    },
+    {
+      "instruction": "*\ud83d\udd11 Step 5: Installation Instruction*\n\u2022 Proceed through the installation wizard.\n_Expected: Step 5 is completed._"
+    },
+    {
+      "instruction": "*\u2705 Step 6: Installation Instruction*\n\u2022 Upon first launch, complete the Setup Wizard to download the SDK and emulator components.\n_Expected: Step 6 is completed._"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+    "issue_type": "hardware",
+    "title": "Microphone Permissions & Issues",
+    "description": "Troubleshoot microphone permissions and recording issues in apps.",
+    "keywords": [
+        "permissions not working for mic",
+        "microphone not working",
+        "mic permission",
+        "cannot speak",
+        "no sound from mic",
+        "mic error",
+        "audio input missing",
+        "mic muted"
+    ],
+    "steps": [
+        {
+            "instruction": "Open Windows Settings → Privacy & Security → Microphone. Ensure 'Microphone access' is turned ON for your device."
+        },
+        {
+            "instruction": "Scroll down and ensure 'Let desktop apps access your microphone' is turned ON (this is required for Teams, Zoom, Slack)."
+        },
+        {
+            "instruction": "Check the meeting app (Teams/Zoom) settings: Ensure the correct Microphone input device is selected and not muted inside the app."
+        },
+        {
+            "instruction": "Check physical mute buttons on your headset's cord or earcup."
+        },
+        {
+            "instruction": "Right-click the speaker icon in the taskbar → Sound Settings → Input. Test your microphone there to see if the volume bar moves."
+        }
+    ]
+}

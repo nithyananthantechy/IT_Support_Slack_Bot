@@ -1,0 +1,44 @@
+{
+    "issue_type": "email_session",
+    "title": "Email Session Expired Repeatedly",
+    "description": "Troubleshooting repeated email session expiry or being signed out automatically.",
+    "keywords": [
+        "email session expired",
+        "session expired email",
+        "keeps logging out email",
+        "email keeps signing out",
+        "email session timeout",
+        "zoho session expired",
+        "outlook session expired",
+        "email signed out repeatedly",
+        "email auto logout",
+        "email login expired",
+        "session expired repeatedly",
+        "mail session expired",
+        "email token expired",
+        "email keeps expiring",
+        "getting logged out of email"
+    ],
+    "steps": [
+        {
+            "title": "Sign Out and Sign Back In",
+            "instruction": "*🔄 Step 1: Sign Out and Sign Back In*\n• Completely sign out of your email account.\n• Close all browser tabs and windows.\n• Reopen your browser and log back into your email.\n• If using an email app (Outlook, Zoho), close it fully and reopen.\n_Expected: A fresh session starts and session expiry issue is resolved._"
+        },
+        {
+            "title": "Clear Browser Cookies and Cache",
+            "instruction": "*🧹 Step 2: Clear Browser Cookies and Cache*\n• In your browser, press *Ctrl + Shift + Delete*.\n• Select *All time* as the time range.\n• Check *Cookies and other site data* and *Cached images and files*.\n• Click *Clear data*, then log back into your email.\n_Expected: Old/corrupt session data is cleared, preventing premature expiry._"
+        },
+        {
+            "title": "Check Browser Settings — Block Third-Party Cookies",
+            "instruction": "*⚙️ Step 3: Check Browser Cookie Settings*\n• Some browsers block cookies that email services need to keep you signed in.\n• In Chrome: *Settings → Privacy and Security → Cookies → Allow all cookies*.\n• In Edge: *Settings → Privacy → Balanced or Basic* mode.\n• Try signing in again after adjusting settings.\n_Expected: Browser allows session cookies, preventing auto sign-out._"
+        },
+        {
+            "title": "Update Your Email App",
+            "instruction": "*⬆️ Step 4: Update Your Email App*\n• If using a desktop email client (Outlook, Thunderbird, Zoho Mail app):\n  - Open the app → Go to *Help → Check for Updates* (or similar).\n  - Install any available updates.\n• Outdated apps often have session management bugs.\n_Expected: Updated app maintains session correctly._"
+        },
+        {
+            "title": "Check Account Security Settings",
+            "instruction": "*🔐 Step 5: Check Account Security / Session Policies*\n• Some accounts are configured by IT to expire sessions after a certain period (e.g., 8 hours) for security.\n• Log in to your email web portal and check *Settings → Security → Active Sessions*.\n• If sessions are being revoked, it could indicate suspicious activity — raise a ticket with IT.\n• Provide: your email address, browser/device used, and how often sessions expire.\n_Expected: IT confirms whether this is a policy setting or a security issue._"
+        }
+    ]
+}

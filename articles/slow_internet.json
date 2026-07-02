@@ -1,0 +1,46 @@
+{
+    "issue_type": "slow_internet",
+    "title": "Slow Internet Speed",
+    "description": "Troubleshooting slow internet connection or poor network speed.",
+    "keywords": [
+        "slow internet",
+        "internet slow",
+        "slow network",
+        "network slow",
+        "internet speed",
+        "slow connection",
+        "poor internet",
+        "buffering",
+        "internet lagging",
+        "internet lag",
+        "low internet speed",
+        "bad internet",
+        "weak internet",
+        "internet too slow",
+        "slow browsing",
+        "pages loading slowly",
+        "video buffering"
+    ],
+    "steps": [
+        {
+            "title": "Run a Speed Test",
+            "instruction": "*⚡ Step 1: Run a Speed Test*\n• Open a browser and go to `https://www.speedtest.net` or `https://fast.com`.\n• Click *Go* and wait for the results.\n• Note your Download and Upload speed.\n_Expected: Speeds should match your subscribed internet plan. If significantly lower, proceed with next steps._"
+        },
+        {
+            "title": "Restart Your Router",
+            "instruction": "*🔌 Step 2: Restart Your Router*\n• Unplug your WiFi router from the power socket.\n• Wait 30 seconds, then plug it back in.\n• Wait 2 minutes for the router to fully restart.\n• Run the speed test again to compare.\n_Expected: Speed improves after router restart._"
+        },
+        {
+            "title": "Move Closer to Router or Use Ethernet",
+            "instruction": "*📶 Step 3: Move Closer to Router or Use Ethernet*\n• WiFi signal weakens with distance and walls. Try moving closer to the router.\n• If possible, connect directly using a *LAN/Ethernet cable* for the fastest speeds.\n_Expected: Wired connection or closer position improves speed significantly._"
+        },
+        {
+            "title": "Close Bandwidth-Heavy Applications",
+            "instruction": "*🚫 Step 4: Close Bandwidth-Heavy Applications*\n• Check if any apps are downloading updates in the background (Windows Update, OneDrive, Google Drive, Dropbox).\n• Press *Ctrl + Shift + Esc* → Task Manager → *Network* column — end any process using heavy bandwidth.\n• Pause Windows Update via *Settings → Windows Update → Pause Updates*.\n_Expected: Other apps stop consuming bandwidth, freeing up speed._"
+        },
+        {
+            "title": "Flush DNS Cache",
+            "instruction": "*🛠️ Step 5: Flush DNS Cache*\n• Ask IT to run the DNS flush for you, or:\n• Press *Windows + R* → type `cmd` → click OK.\n• In the window, type: `ipconfig /flushdns` and press Enter.\n• You should see: *Successfully flushed the DNS Resolver Cache*.\n• Restart your browser and test again.\n_Expected: Pages load faster after DNS cache is cleared._"
+        }
+    ]
+}

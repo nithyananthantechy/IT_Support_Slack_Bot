@@ -1,0 +1,31 @@
+{
+    "issue_type": "hardware",
+    "title": "Screen Size and Display Issues",
+    "description": "Fix resolution, screen size, and UI scaling issues on monitors.",
+    "keywords": [
+        "screen size issue",
+        "wrong resolution",
+        "display scaling",
+        "screen too big",
+        "screen too small",
+        "blurry screen",
+        "display not fitting"
+    ],
+    "steps": [
+        {
+            "instruction": "Right-click on your Desktop and select 'Display settings'."
+        },
+        {
+            "instruction": "Scroll down to 'Scale and layout'. Ensure the 'Scale' dropdown is set to the (Recommended) percentage (usually 100% or 125%)."
+        },
+        {
+            "instruction": "Ensure the 'Display resolution' dropdown is set to the (Recommended) option for your monitor."
+        },
+        {
+            "instruction": "If using an external monitor, disconnect and reconnect the HDMI/DisplayPort cable."
+        },
+        {
+            "instruction": "Restart your computer. If the screen is still too stretched or blurry, your graphics driver may need updating (raise a ticket for IT)."
+        }
+    ]
+}

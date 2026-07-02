@@ -1,0 +1,30 @@
+{
+    "issue_type": "hardware",
+    "title": "Laptop Won't Power On",
+    "description": "Troubleshoot a laptop that is dead or black screening.",
+    "keywords": [
+        "laptop power on issue",
+        "laptop won't turn on",
+        "laptop not starting",
+        "dead laptop",
+        "black screen laptop",
+        "won't boot up laptop"
+    ],
+    "steps": [
+        {
+            "instruction": "Ensure the power adapter is firmly plugged into the wall and the laptop charging port."
+        },
+        {
+            "instruction": "Look for charging indicator lights on the laptop (usually next to the port or on the front edge). If no light is showing, the charger or socket might be dead."
+        },
+        {
+            "instruction": "Try holding the power button down for 30 seconds to perform a hard reset. Then release and press it once normally."
+        },
+        {
+            "instruction": "Disconnect any external devices (USB hubs, external monitors, docking stations) and try powering on the laptop barebones."
+        },
+        {
+            "instruction": "If the laptop still shows zero signs of life (no fan noise, no lights), it requires hardware service. Please raise a ticket with your Asset ID."
+        }
+    ]
+}

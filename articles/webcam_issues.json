@@ -1,30 +1,41 @@
 {
     "issue_type": "hardware",
-    "title": "Webcam Troubleshooting",
-    "description": "Resolving webcam connection and permission issues.",
+    "title": "Camera / Webcam Troubleshooting",
+    "description": "Resolving laptop camera and webcam connection, permission, and driver issues.",
     "keywords": [
-        "webcam",
         "camera",
+        "webcam",
+        "laptop camera",
+        "camera not working",
+        "webcam not working",
         "video",
-        "permission",
-        "usb"
+        "video call",
+        "camera issue",
+        "camera problem",
+        "camera black",
+        "camera blank",
+        "front camera"
     ],
     "steps": [
         {
-            "title": "Physical Connection",
-            "instruction": "Check USB connection. Try another USB port."
+            "title": "Close Conflicting Apps",
+            "instruction": "Close all apps that may be using the camera (Zoom, Teams, Google Meet, Slack, etc.). Only one app can access the camera at a time. Then reopen the app you need."
         },
         {
-            "title": "System & App Check",
-            "instruction": "Restart your system. Close other apps that might be using the camera (Zoom, Teams, etc.)."
+            "title": "Check Camera Privacy Settings",
+            "instruction": "Windows: Settings → Privacy & Security → Camera → Ensure 'Camera access' is ON and your app is allowed.\nMac: System Settings → Privacy & Security → Camera → Enable the toggle for your app."
         },
         {
-            "title": "Settings & Permissions",
-            "instruction": "Check camera permissions in your OS settings and ensure the correct camera is selected in the app."
+            "title": "Check Device Manager / Drivers",
+            "instruction": "Windows: Open Device Manager → Expand 'Cameras' or 'Imaging Devices' → Right-click your camera → 'Update driver' or 'Enable device' if disabled.\nMac: Check System Report → Camera to confirm detection."
         },
         {
-            "title": "Raise Ticket",
-            "instruction": "If needed, raise a ticket with: Asset ID, Error screenshot, App name, and steps tried."
+            "title": "Restart & Physical Check",
+            "instruction": "Restart your laptop. If using an external webcam, unplug and replug it into a different USB port. Ensure no physical camera shutter/cover is blocking the lens."
+        },
+        {
+            "title": "Raise Support Ticket",
+            "instruction": "If the camera still doesn't work after all steps above, raise a support ticket with: your Asset/Laptop ID, app name, error details, and steps already tried."
         }
     ]
 }

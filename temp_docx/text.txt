@@ -1,0 +1,45 @@
+Wrong troubleshooting steps
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+9.
+10.
+11.
+12.
+13.
+14.
+15.
+16.
+17
+Advanced steps
+Article
+ need to add 
+for :
+1.
+Battery draining quickly
+2. 
+Slow internet
+3.
+ 
+Email Session expired repeatedly
+4.
+Email Account locked
+5.
+ 
+Multi-factor authentication failure
+6.
+Incorrect search results
+7.
+File upload failed
+8.
+ 
+Unsupported file format
+9.
+ 
+Corrupted files
+10.
+File size limit errors

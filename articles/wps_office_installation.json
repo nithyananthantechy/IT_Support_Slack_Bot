@@ -1,0 +1,22 @@
+{
+  "title": "WPS Office Installation Guide",
+  "keywords": ["wps", "wps office", "install wps", "wps office install", "install office", "office suite", "install writer", "install spreadsheet", "wps package"],
+  "issue_type": "software_install",
+  "steps": [
+    {
+      "instruction": "*🔐 Step 1: Get IT Approval First (MANDATORY)*\n• Before installing ANY software on your company machine, you MUST get permission from the IT team.\n• Message the IT help desk or your IT manager and request approval to install WPS Office.\n• Do NOT proceed with installation until IT confirms approval.\n_Expected: You receive a written or Slack confirmation from IT to go ahead._"
+    },
+    {
+      "instruction": "*📥 Step 2: Download WPS Office Installer*\n• Once IT approves, download the official WPS Office installer using this link:\n`https://wdl1.pcfg.cache.wpscdn.com/wpsdl/wpsoffice/onlinesetup/distsrc/200.1087/wpsinst/wps_office_inst.exe`\n• Save the `.exe` file to your Desktop or Downloads folder.\n_Expected: A file named `wps_office_inst.exe` is downloaded._"
+    },
+    {
+      "instruction": "*🖱️ Step 3: Run the Installer*\n• Locate the downloaded file `wps_office_inst.exe`.\n• Right-click on the file → Select *Run as administrator*.\n• If prompted by Windows UAC (User Account Control), click *Yes* to allow.\n_Expected: The WPS Office setup wizard opens._"
+    },
+    {
+      "instruction": "*⚙️ Step 4: Complete the Installation*\n• Read and accept the License Agreement.\n• Choose the installation path (default is recommended).\n• Click *Install Now* or *Custom Install* based on your preference.\n• Wait for the installation to complete — it may take 2-5 minutes.\n_Expected: Installation completes and WPS Office desktop shortcut appears._"
+    },
+    {
+      "instruction": "*✅ Step 5: Launch and Verify*\n• Open WPS Office from the desktop shortcut or Start Menu.\n• Sign in or continue as a guest if prompted.\n• Open a test document to verify everything works correctly.\n• Inform IT team that installation is done.\n_Expected: WPS Office opens successfully and is ready to use._"
+    }
+  ]
+}

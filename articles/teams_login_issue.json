@@ -1,0 +1,35 @@
+{
+    "issue_type": "software",
+    "title": "Microsoft Teams Login Issue",
+    "description": "Troubleshooting steps for users unable to sign into Microsoft Teams.",
+    "keywords": [
+        "teams login",
+        "teams sign in",
+        "teams access",
+        "teams login error",
+        "can't log into teams",
+        "microsoft teams login"
+    ],
+    "steps": [
+        {
+            "title": "Clear Teams Cache",
+            "instruction": "Completely quit Teams. On Windows: Press Win+R, type `%appdata%\\Microsoft\\Teams`, and delete everything in the folder. Then restart Teams."
+        },
+        {
+            "title": "Sign Out and Sign Back In",
+            "instruction": "Open the Teams app, click your profile picture, select 'Sign out', then sign back in using your company credentials."
+        },
+        {
+            "title": "Check Web Client",
+            "instruction": "Try logging into Teams on the web (teams.microsoft.com) to see if it's an app-specific issue or an account issue."
+        },
+        {
+            "title": "Ensure Software is Updated",
+            "instruction": "Check for updates by clicking your profile picture and selecting 'Check for updates' in the Teams app."
+        },
+        {
+            "title": "Contact IT Support",
+            "instruction": "If you still cannot log in on both the desktop app and the web browser, your account may be locked. Please raise a ticket."
+        }
+    ]
+}

@@ -74,28 +74,20 @@ const findArticle = (issueTypeOrQuery) => {
 
             // 1. Exact full phrase match (highest weight)
             if (query === kw) {
-                score += 15;
+                score += 25;
             }
-            // 2. Query contains keyword (e.g. "my net is slow" contains "net")
-            // Only if keyword is 3+ chars to avoid matching "i" or "ai" accidentally
-            else if (query.includes(kw) && kw.length >= 3) {
-                score += 10;
-            }
-            // 3. Keyword contains query (e.g. "syncing" contains "syn")
-            // Only if query is 3+ chars to avoid "hi" -> "high cpu"
-            else if (kw.includes(query) && query.length >= 3) {
-                score += 5;
+            // 2. Word boundary match
+            else {
+                const regex = new RegExp(`\\b${kw.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')}\\b`, 'i');
+                if (regex.test(query)) {
+                    score += 15;
+                }
             }
         });
 
-        // 4. Title similarity matching (High priority)
+        // 3. Exact Title matching (High priority)
         const lowerTitle = article.title.toLowerCase();
-        const titleWords = lowerTitle.split(/\s+/).filter(w => w.length > 2);
-
-        // Match if query is the title or contains the title's main words
         if (query === lowerTitle) score += 25;
-        else if (titleWords.some(w => query.includes(w))) score += 15;
-        else if (queryWords.some(w => lowerTitle.includes(w))) score += 12;
 
         return { article, score };
     });
@@ -121,13 +113,28 @@ const getAllArticles = () => {
 }
 
 /**
- * Save/Create a JSON article
+ * Save/Create a JSON article (supports both admin dashboard (id, data) and AI self-learning (article) signatures)
  */
-const saveArticle = async (id, articleData) => {
-    const filename = id.endsWith('.json') ? id : `${id}.json`;
-    const filePath = path.join(ARTICLES_DIR, filename);
-    await fs.writeJson(filePath, articleData, { spaces: 2 });
-    await loadArticles();
+const saveArticle = async (idOrArticle, articleData = null) => {
+    if (articleData === null) {
+        // Signature: saveArticle(article) -> AI Self-Learning
+        const article = idOrArticle;
+        try {
+            const filePath = path.join(ARTICLES_DIR, `${article.id}.json`);
+            await fs.writeJson(filePath, article, { spaces: 4 });
+            await loadArticles();
+            console.log(`🧠 AI Self-Learning: Saved new article ${article.id}`);
+        } catch (error) {
+            console.error("Failed to save auto-learned article:", error);
+        }
+    } else {
+        // Signature: saveArticle(id, articleData) -> Admin Web Portal
+        const id = idOrArticle;
+        const filename = id.endsWith('.json') ? id : `${id}.json`;
+        const filePath = path.join(ARTICLES_DIR, filename);
+        await fs.writeJson(filePath, articleData, { spaces: 2 });
+        await loadArticles();
+    }
 };
 
 /**
@@ -143,9 +150,14 @@ const deleteArticle = async (id) => {
     return false;
 };
 
+const findArticleByIssueType = (issueType) => {
+    return articlesCache.find(a => a.issue_type === issueType) || null;
+};
+
 module.exports = {
     loadArticles,
     findArticle,
+    findArticleByIssueType,
     getAllArticles,
     saveArticle,
     deleteArticle

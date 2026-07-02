@@ -1,0 +1,36 @@
+{
+    "issue_type": "email",
+    "title": "Zoho Mail Login Issue",
+    "description": "Troubleshooting steps for users unable to log into Zoho Mail.",
+    "keywords": [
+        "zoho mail login",
+        "zoho login issue",
+        "zoho sign in",
+        "zoho mail not working",
+        "can't access zoho",
+        "zoho mail authentication",
+        "zoho mail error"
+    ],
+    "steps": [
+        {
+            "title": "Verify Credentials",
+            "instruction": "Ensure you are typing your complete email address (e.g., user@company.com) and the correct password."
+        },
+        {
+            "title": "Check Account Expiration",
+            "instruction": "If you recently changed your password, ensure your password manager has the updated credentials."
+        },
+        {
+            "title": "Clear Browser Cache",
+            "instruction": "Clear your browser cache and cookies, or try logging in using an Incognito/Private browsing window."
+        },
+        {
+            "title": "Check Two-Factor Authentication (2FA)",
+            "instruction": "If prompted for a 2FA code, ensure you have your authenticator app or are able to receive SMS codes."
+        },
+        {
+            "title": "Contact IT Support",
+            "instruction": "If login still fails, your account might be locked due to too many failed attempts. Please raise a ticket to have it unlocked."
+        }
+    ]
+}

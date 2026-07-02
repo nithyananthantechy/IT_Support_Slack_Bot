@@ -1,0 +1,44 @@
+{
+    "issue_type": "email_account_locked",
+    "title": "Email Account Locked",
+    "description": "Troubleshooting a locked email account, including verifying the lock status and basic recovery steps.",
+    "keywords": [
+        "email account locked",
+        "email locked",
+        "email account blocked",
+        "mail account locked",
+        "zoho account locked",
+        "outlook account locked",
+        "gmail account locked",
+        "email access blocked",
+        "can't login email",
+        "email login blocked",
+        "email suspended",
+        "email account suspended",
+        "account locked email",
+        "locked out of email",
+        "email is locked"
+    ],
+    "steps": [
+        {
+            "title": "Verify the Account Is Actually Locked",
+            "instruction": "*🔍 Step 1: Verify the Account Is Actually Locked*\n• Open your browser and go directly to your email provider's web login:\n  - Zoho: `https://mail.zoho.com`\n  - Outlook/Microsoft 365: `https://outlook.office.com`\n  - Gmail: `https://mail.google.com`\n• Try logging in with your email and password.\n• Check the exact error message shown — does it say *Account Locked*, *Suspended*, or *Incorrect Password*?\n_Expected: You can confirm whether the account is locked, just has a wrong password, or has another issue._"
+        },
+        {
+            "title": "Wait and Retry (Temporary Lockout)",
+            "instruction": "*⏱️ Step 2: Wait and Retry (Temporary Lockout)*\n• Email accounts auto-lock after multiple failed login attempts.\n• Wait *15–30 minutes* without trying to log in again, then retry.\n• Make sure Caps Lock is OFF before entering your password.\n• Try entering your password slowly and carefully.\n_Expected: Temporary lockout clears after the wait period._"
+        },
+        {
+            "title": "Check on a Different Device or Browser",
+            "instruction": "*💻 Step 3: Check on a Different Device or Browser*\n• Try logging into your email on a different device (e.g., phone or another laptop).\n• Or try a different browser (Chrome, Edge, Firefox) or an Incognito window.\n• This confirms whether the issue is with your device or the actual account.\n_Expected: If login works on another device, the issue is browser/device-specific._"
+        },
+        {
+            "title": "Check for Suspicious Activity Notifications",
+            "instruction": "*🔔 Step 4: Check for Suspicious Activity Notifications*\n• Look for any email from your IT team or email provider in a backup/personal email account.\n• IT may have locked your account due to a security policy or suspicious login attempt.\n• Check your phone — some providers send an SMS alert when your account is locked.\n_Expected: You find a notification explaining why the account was locked._"
+        },
+        {
+            "title": "Raise a Ticket with IT Support",
+            "instruction": "*🎫 Step 5: Raise a Ticket with IT Support*\n• If steps above don't resolve it, raise a support ticket.\n• Provide the following in your ticket:\n  - Your email address\n  - When the issue started\n  - The error message you see when trying to log in\n  - Your Employee ID\n• IT will verify your identity and unlock the account for you.\n_Expected: IT team unlocks the account and confirms access._"
+        }
+    ]
+}

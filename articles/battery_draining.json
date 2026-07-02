@@ -1,0 +1,31 @@
+{
+    "issue_type": "hardware",
+    "title": "Battery Draining Quickly",
+    "description": "Troubleshoot fast battery drain on laptops.",
+    "keywords": [
+        "battery draining",
+        "battery draining quickly",
+        "battery drains fast",
+        "battery life poor",
+        "battery dying",
+        "loses charge",
+        "battery depleting"
+    ],
+    "steps": [
+        {
+            "instruction": "Click the battery icon in the taskbar. Set the Power Mode slider left towards 'Best battery life'."
+        },
+        {
+            "instruction": "Open Settings → System → Battery → Battery usage per app to see which background applications are using the most battery. Close unnecessary apps."
+        },
+        {
+            "instruction": "Lower your screen brightness to 50% or less to significantly extend battery life."
+        },
+        {
+            "instruction": "Turn off Bluetooth and Wi-Fi if not currently in use."
+        },
+        {
+            "instruction": "If the battery continues to drain exceptionally fast (e.g. going from 100% to 0% in an hour) even after a restart, please raise a hardware ticket for battery replacement."
+        }
+    ]
+}

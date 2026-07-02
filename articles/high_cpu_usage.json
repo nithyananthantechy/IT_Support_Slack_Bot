@@ -1,0 +1,43 @@
+{
+    "issue_type": "high_cpu",
+    "title": "High CPU Usage",
+    "description": "Troubleshooting high CPU usage causing slow performance, overheating, or fan noise.",
+    "keywords": [
+        "high cpu",
+        "cpu usage",
+        "cpu 100",
+        "high cpu usage",
+        "cpu running high",
+        "processor usage",
+        "cpu overload",
+        "cpu spike",
+        "computer slow high cpu",
+        "fan noise high cpu",
+        "overheating cpu",
+        "cpu maxed out",
+        "task manager cpu",
+        "100 percent cpu"
+    ],
+    "steps": [
+        {
+            "title": "Check Task Manager",
+            "instruction": "*📊 Step 1: Check Task Manager*\n• Press *Ctrl + Shift + Esc* to open Task Manager.\n• Click the *CPU* column header to sort by highest usage.\n• Identify which process is consuming the most CPU.\n_Expected: You can see which app or process is causing high CPU._"
+        },
+        {
+            "title": "End High-CPU Processes",
+            "instruction": "*🛑 Step 2: End High-CPU Processes*\n• In Task Manager, right-click on the process using the most CPU.\n• Select *End Task*. If prompted, confirm.\n• Do NOT end processes labelled *System*, *lsass.exe*, or *svchost.exe* — these are critical.\n_Expected: CPU usage drops after ending unnecessary tasks._"
+        },
+        {
+            "title": "Disable Startup Programs",
+            "instruction": "*🚫 Step 3: Disable Unnecessary Startup Programs*\n• In Task Manager, click the *Startup* tab.\n• Right-click any non-essential apps (e.g., Spotify, Skype) and select *Disable*.\n• Restart your computer.\n_Expected: Fewer programs auto-start, reducing CPU load at boot._"
+        },
+        {
+            "title": "Scan for Malware",
+            "instruction": "*🛡️ Step 4: Scan for Malware*\n• Open *Windows Security* → *Virus & Threat Protection* → Click *Quick Scan*.\n• Malware often runs silently and causes high CPU usage.\n• If threats are found, click *Remove* and follow the prompts.\n_Expected: No threats found, or threats removed._"
+        },
+        {
+            "title": "Restart Your Computer",
+            "instruction": "*🔄 Step 5: Restart Your Computer*\n• Save all your work and restart the computer.\n• A fresh restart clears memory leaks and background processes that may be stuck.\n• After restart, monitor the CPU in Task Manager to see if it stays normal.\n_Expected: CPU usage returns to below 50% after restart._"
+        }
+    ]
+}

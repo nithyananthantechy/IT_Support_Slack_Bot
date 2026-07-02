@@ -1,0 +1,30 @@
+{
+  "title": "Windows App (AVD) Installation Guide",
+  "keywords": [
+    "windows app",
+    "avd",
+    "azure virtual desktop",
+    "install windows app"
+  ],
+  "issue_type": "software_install",
+  "steps": [
+    {
+      "instruction": "*\ud83d\udd10 Step 1: Get IT Approval First (MANDATORY)*\n\u2022 You MUST get permission from the IT team before installing ANY software on a company machine.\n\u2022 Raise a request to the IT Helpdesk specifying you need Windows App (AVD).\n\u2022 Do NOT proceed with installation until IT confirms approval.\n_Expected: You receive IT approval confirmation._"
+    },
+    {
+      "instruction": "*\ud83d\udce5 Step 2: Download Windows App (AVD)*\n\u2022 Once approved, download the setup file from:\n`https://apps.microsoft.com/detail/9N1F85V9T8BN (or IT-provided Azure link)`\n\u2022 Save the file locally.\n_Expected: Download finishes._"
+    },
+    {
+      "instruction": "*\ud83d\uddb1\ufe0f Step 3: Installation Instruction*\n\u2022 Install 'Windows App' from the Microsoft Store or via direct download.\n_Expected: Step 3 is completed._"
+    },
+    {
+      "instruction": "*\u2699\ufe0f Step 4: Installation Instruction*\n\u2022 Open the app.\n_Expected: Step 4 is completed._"
+    },
+    {
+      "instruction": "*\ud83d\udd11 Step 5: Installation Instruction*\n\u2022 Click 'Subscribe' or 'Add Workspace'.\n_Expected: Step 5 is completed._"
+    },
+    {
+      "instruction": "*\u2705 Step 6: Installation Instruction*\n\u2022 Log in with your company credentials to access your remote desktop.\n_Expected: Step 6 is completed._"
+    }
+  ]
+}

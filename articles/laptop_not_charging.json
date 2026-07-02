@@ -25,8 +25,8 @@
             "instruction": "Check laptop's charging port for any debris, dust, or damage. Clean gently with compressed air if needed."
         },
         {
-            "title": "Remove and Reseat Battery (if removable)",
-            "instruction": "Shut down laptop, remove battery, press power button for 15 seconds, reinsert battery, and try charging again."
+            "title": "Hardware or Battery Check",
+            "instruction": "Do not attempt to remove the battery or perform a hard reset. Kindly generate a ticket so our IT team agent can reach out and fix it for you."
         },
         {
             "title": "Update Battery Driver",
